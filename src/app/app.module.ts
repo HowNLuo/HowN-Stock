@@ -10,6 +10,9 @@ import { PortfoliosComponent } from './portfolios/portfolios.component';
 import { HomeComponent } from './home/home.component';
 import { StockInfoComponent } from './stock-info/stock-info.component';
 import { PortfolioComponent } from './portfolios/portfolio/portfolio.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule} from '@angular/common/http'
+import { UserStocksDetailComponent } from './user-stocks-detail/user-stocks-detail.component';
 
 @NgModule({
   declarations: [
@@ -18,12 +21,15 @@ import { PortfolioComponent } from './portfolios/portfolio/portfolio.component';
     PortfoliosComponent,
     PortfolioComponent,
     HomeComponent,
-    StockInfoComponent
+    StockInfoComponent,
+    UserStocksDetailComponent
    ],
   imports: [
+    FormsModule,
     BrowserModule,
     AppRoutingModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
