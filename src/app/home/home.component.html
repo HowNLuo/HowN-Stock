@@ -14,16 +14,19 @@
   <button type="button" class="btn btn-primary col-md-1" (click)="onSearchClick()">查詢</button>
 </div>
 
-<div class="mt-5 d-flex align-items-center flex-column" *ngIf="stockData.data.length === 0">
+<div class="mt-5 d-flex align-items-center flex-column" *ngIf="!stocksData">
   <h1>請輸入查詢資料🙂</h1>
 </div>
 
 <div class="d-flex mt-5 justify-content-between align-items-end">
-  <h1 *ngIf="stockData.title">{{ stockData.title }}</h1>
-  <span type="button" class="mb-3" *ngIf="stockData.data.length !== 0">加入投資組合 <i class="fa-regular fa-star"></i></span>
+  <h2 *ngIf="stocksData">{{ stocksData.title }}</h2>
+  <span type="button" class="mb-3" *ngIf="stocksData">
+    加入投資組合
+    <i class="fa-star" [class.fa-regular]="!isHovered" [class.fa-solid.fa-regular]="isHovered" (mouseover)="toggleHover(true)" (mouseout)="toggleHover(false)"></i>
+  </span>
 </div>
 
-<table class="table table-fixed mt-1" *ngIf="stockData">
+<table class="table table-fixed mt-1">
   <thead>
     <tr>
       <th>日期</th>
@@ -37,8 +40,8 @@
       <th>成交筆數</th>
     </tr>
   </thead>
-  <tbody class="list-unstyled">
-    <tr *ngFor="let stock of stockData.data">
+  <tbody class="list-unstyled" *ngIf="stocksData">
+    <tr *ngFor="let stock of stocksData.data">
       <td>{{ stock[0] }}</td>
       <td>{{ stock[1] }}</td>
       <td>{{ stock[2] }}</td>

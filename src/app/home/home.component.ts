@@ -1,7 +1,7 @@
+import { HistoricalStocks } from './../core/interface/stock.interface';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 
-import { Stock } from './../core/interface/stock.interface';
 import { mockStocks } from '../shared/mock/stock.mock';
 
 declare var $: any;
@@ -12,9 +12,10 @@ declare var $: any;
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  stockData: {title:string, data: string[][]} = {title:'', data: []};
+  stocksData: HistoricalStocks;
   stockKeyword: string;
   yearAndMonth: string;
+  isHovered: boolean;
 
   constructor(
     private http: HttpClient
@@ -34,6 +35,10 @@ export class HomeComponent implements OnInit {
   }
 
   onSearchClick() {
-    this.stockData = mockStocks;
+    this.stocksData = mockStocks;
+  }
+
+  toggleHover(hovered: boolean) {
+    this.isHovered = hovered;
   }
 }

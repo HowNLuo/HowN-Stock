@@ -1,4 +1,6 @@
-export const mockStocks = {
+import { HistoricalStocks } from './../../core/interface/stock.interface';
+
+export const mockStocks: HistoricalStocks = {
   title: '0050 元大寶來台灣卓越50證券投資信託基金',
   data: [
     [
