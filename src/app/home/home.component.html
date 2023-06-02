@@ -26,6 +26,34 @@
   </span>
 </div>
 
+<div class="row mt-5 mb-5" *ngIf="stocksData">
+  <div class="col-md-7">
+    <div id="chart"></div>
+  </div>
+  <div class="col-md-5">
+    <div class="historial-stock-detail">
+      <div>日期</div>
+      <div>109/04/30</div>
+      <div>成交股數</div>
+      <div>18,785,156</div>
+      <div>成交金額</div>
+      <div>1,597,420,751</div>
+      <div>開盤</div>
+      <div>84.45</div>
+      <div>收盤</div>
+      <div>85.50</div>
+      <div>最高</div>
+      <div>85.50</div>
+      <div>最低</div>
+      <div>84.40</div>
+      <div>振幅</div>
+      <div>+1.80</div>
+      <div>成交筆數</div>
+      <div>8,305</div>
+    </div>
+  </div>
+</div>
+
 <table class="table table-fixed mt-1">
   <thead>
     <tr>
@@ -54,4 +82,3 @@
     </tr>
   </tbody>
 </table>
-

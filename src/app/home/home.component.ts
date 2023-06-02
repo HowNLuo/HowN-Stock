@@ -1,6 +1,5 @@
 import { HistoricalStocks } from './../core/interface/stock.interface';
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
 
 import { mockStocks } from '../shared/mock/stock.mock';
 
@@ -17,9 +16,7 @@ export class HomeComponent implements OnInit {
   yearAndMonth: string;
   isHovered: boolean;
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor() { }
 
   ngOnInit() {
     this.setCalander();
@@ -36,9 +33,16 @@ export class HomeComponent implements OnInit {
 
   onSearchClick() {
     this.stocksData = mockStocks;
+    setTimeout(() => {
+      this.drawChart();
+    }, 0);
   }
 
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
   }
+
+  drawChart() {
+  }
+
 }
