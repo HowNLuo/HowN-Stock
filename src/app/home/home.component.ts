@@ -1,10 +1,10 @@
-import { HistoricalStocks } from './../core/interface/stock.interface';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
+import { HistoricalStocks } from './../core/interface/stock.interface';
 import { mockStocks } from '../shared/mock/stock.mock';
 
 import * as Chart from 'chart.js';
-declare var $: any;
 
 @Component({
   selector: 'app-home',
@@ -12,9 +12,8 @@ declare var $: any;
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('f') form: NgForm;
   stocksData: HistoricalStocks; // 股票搜尋結果
-  stockKeyword: string;         // 搜尋關鍵字
-  yearAndMonth: string;         // 欲查詢月份
   isHovered: boolean;
 
   constructor() { }
@@ -25,11 +24,6 @@ export class HomeComponent implements OnInit {
 
   /** 設定日期選擇欄位 */
   setCalander() {
-    $('.datepicker').datepicker({
-      minViewMode: 'months',
-      format: 'yyyy-mm',
-      autoclose: true
-    });
   }
 
   onSearchClick() {
@@ -53,7 +47,7 @@ export class HomeComponent implements OnInit {
     this.stocksData.data.forEach(stockData => {
       xArray.push(stockData[0].slice(-5))
       yArray.push(stockData[6])
-    })
+    });
 
     const data = {
       labels: xArray,
@@ -66,11 +60,20 @@ export class HomeComponent implements OnInit {
       }]
     };
 
-    new Chart(ctx, {
+    const options = {};
+
+    let chart = new Chart(ctx, {
       type: 'line',
       data: data,
-      options: {}
+      options: options
     });
   }
 
+  test() {
+    console.log(this.form)
+    this.form.form.patchValue({
+      stockKeyword: '0050',
+      selectedMonth: '2023-04'
+    })
+  }
 }

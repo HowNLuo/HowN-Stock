@@ -10,3 +10,7 @@
 .historial-stock-detail > div:nth-child(2) {
   grid-area: 1 / 2 / 2 / 5;
 }
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
