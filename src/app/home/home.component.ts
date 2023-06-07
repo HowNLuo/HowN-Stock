@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
-import { HistoricalStocks } from './../core/interface/stock.interface';
+import { StockService } from './../core/service/stock.service';
+import { HistoricalStock, StockInfo } from './../core/interface/stock.interface';
 import { mockStocks } from '../shared/mock/stock.mock';
 
 import * as Chart from 'chart.js';
+import { delay, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -13,24 +16,38 @@ import * as Chart from 'chart.js';
 })
 export class HomeComponent implements OnInit {
   @ViewChild('f') form: NgForm;
-  stocksData: HistoricalStocks; // 股票搜尋結果
+  historicalStockData: HistoricalStock[];  // 股票搜尋結果
+  stockInfo: StockInfo;
   isHovered: boolean;
 
-  constructor() { }
+  constructor(
+    private stockService: StockService,
+    private datePipe: DatePipe
+  ) { }
 
   ngOnInit() {
-    this.setCalander();
-  }
-
-  /** 設定日期選擇欄位 */
-  setCalander() {
   }
 
   onSearchClick() {
-    this.stocksData = mockStocks;
-    setTimeout(() => {
-      this.drawChart();
-    }, 0);
+    const selectedMonth: Date = this.form.form.value.selectedMonth;
+    const req = {
+      startDate: this.datePipe.transform(selectedMonth, 'yyyy-MM-01'),
+      endDate: this.datePipe.transform(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0), 'yyyy-MM-dd'),
+      stockId: this.form.form.value.stockKeyword
+    }
+
+    this.stockService.getStockInfo(req)
+      .pipe(
+        tap(res => this.stockInfo = res)
+      ).subscribe();
+
+    this.stockService.getHistoricalStockData(req)
+      .pipe(
+        tap(res => this.historicalStockData = res.data),
+        delay(0)  // 等HTML中的chart被生成
+      ).subscribe(() => {
+        this.drawChart();
+      });
   }
 
   toggleHover(hovered: boolean) {
@@ -44,15 +61,15 @@ export class HomeComponent implements OnInit {
 
     let xArray = [];
     let yArray = [];
-    this.stocksData.data.forEach(stockData => {
-      xArray.push(stockData[0].slice(-5))
-      yArray.push(stockData[6])
+    this.historicalStockData.forEach(stockData => {
+      xArray.push(stockData.date.slice(-5));
+      yArray.push(stockData.close);
     });
 
     const data = {
       labels: xArray,
       datasets: [{
-        label: '4月份股價歷史紀錄',
+        label: `${this.form.form.value.selectedMonth.getMonth() + 1}月份股價歷史紀錄`,
         data: yArray,
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
@@ -67,13 +84,5 @@ export class HomeComponent implements OnInit {
       data: data,
       options: options
     });
-  }
-
-  test() {
-    console.log(this.form)
-    this.form.form.patchValue({
-      stockKeyword: '0050',
-      selectedMonth: '2023-04'
-    })
   }
 }

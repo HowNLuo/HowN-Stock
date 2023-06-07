@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule} from '@angular/common/http'
+import { DatePipe } from '@angular/common';
 
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker'
 
@@ -34,7 +35,7 @@ import { UserStocksDetailComponent } from './user-stocks-detail/user-stocks-deta
     BrowserAnimationsModule,
     BsDatepickerModule.forRoot(),
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

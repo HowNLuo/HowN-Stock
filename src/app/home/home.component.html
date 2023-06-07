@@ -12,6 +12,8 @@
       required
       pattern="^[A-Z0-9]*$"
       minlength="4"
+      maxlength="6"
+      autocomplete="off"
     />
   </div>
   <div class="input-group col-md-3">
@@ -27,53 +29,53 @@
       required
       bsDatepicker
       [bsConfig]="{dateInputFormat: 'YYYY-MM', minMode: 'month'}"
+      autocomplete="off"
     />
   </div>
   <button type="submit" class="btn btn-primary col-md-1" [disabled]="f.invalid">查詢</button>
-  <button type="button" class="btn btn-primary col-md-1" (click)="test()">test</button>
 </form>
 
-<div class="mt-5 d-flex align-items-center flex-column" *ngIf="!stocksData">
+<div class="mt-5 d-flex align-items-center flex-column" *ngIf="!historicalStockData">
   <h1 *ngIf="!f.submitted">請輸入查詢資料🙂</h1>
 </div>
 
-<div class="d-flex mt-5 justify-content-between align-items-end">
-  <h2 *ngIf="stocksData">{{ stocksData.title }}</h2>
-  <span type="button" class="mb-3" *ngIf="stocksData">
+<div *ngIf="stockInfo" class="d-flex mt-5 mb-3 justify-content-between align-items-end">
+  <h2>{{ stockInfo.data[0].stock_id}} {{ stockInfo.data[0].stock_name}}</h2>
+  <span type="button">
     加入投資組合
     <i class="fa-star" [class.fa-regular]="!isHovered" [class.fa-solid.fa-regular]="isHovered" (mouseover)="toggleHover(true)" (mouseout)="toggleHover(false)"></i>
   </span>
 </div>
 
-<div class="row mt-5 mb-5" *ngIf="stocksData">
+<div class="row mt-5" *ngIf="historicalStockData">
   <div class="col-md-6">
     <canvas id="chart"></canvas>
   </div>
   <div class="col-md-6 align-self-center">
     <div class="historial-stock-detail">
       <div>日期</div>
-      <div>109/04/30</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].date}}</div>
       <div>成交股數</div>
-      <div>18,785,156</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].Trading_Volume | number}}</div>
       <div>成交金額</div>
-      <div>1,597,420,751</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].Trading_money | number}}</div>
       <div>開盤</div>
-      <div>84.45</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].open | number}}</div>
       <div>收盤</div>
-      <div>85.50</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].close | number}}</div>
       <div>最高</div>
-      <div>85.50</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].max | number}}</div>
       <div>最低</div>
-      <div>84.40</div>
-      <div>振幅</div>
-      <div>+1.80</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].min | number}}</div>
+      <div>買賣價差</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].spread | number}}</div>
       <div>成交筆數</div>
-      <div>8,305</div>
+      <div>{{historicalStockData[historicalStockData.length - 1].Trading_turnover | number}}</div>
     </div>
   </div>
 </div>
 
-<table class="table table-fixed mt-1">
+<table class="table table-fixed mt-5">
   <thead>
     <tr>
       <th>日期</th>
@@ -83,21 +85,21 @@
       <th>最高價</th>
       <th>最低價</th>
       <th>收盤價</th>
-      <th>漲跌價差</th>
+      <th>買賣價差</th>
       <th>成交筆數</th>
     </tr>
   </thead>
-  <tbody class="list-unstyled" *ngIf="stocksData">
-    <tr *ngFor="let stock of stocksData.data">
-      <td>{{ stock[0] }}</td>
-      <td>{{ stock[1] }}</td>
-      <td>{{ stock[2] }}</td>
-      <td>{{ stock[3] }}</td>
-      <td>{{ stock[4] }}</td>
-      <td>{{ stock[5] }}</td>
-      <td>{{ stock[6] }}</td>
-      <td>{{ stock[7] }}</td>
-      <td>{{ stock[8] }}</td>
+  <tbody class="list-unstyled" *ngIf="historicalStockData">
+    <tr *ngFor="let stock of historicalStockData">
+      <td>{{ stock.date }}</td>
+      <td>{{ stock.Trading_Volume  | number }}</td>
+      <td>{{ stock.Trading_money  | number }}</td>
+      <td>{{ stock.open  | number }}</td>
+      <td>{{ stock.max  | number }}</td>
+      <td>{{ stock.min  | number }}</td>
+      <td>{{ stock.close  | number }}</td>
+      <td>{{ stock.spread  | number }}</td>
+      <td>{{ stock.Trading_turnover  | number }}</td>
     </tr>
   </tbody>
 </table>
