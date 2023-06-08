@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 
 import { StockService } from './../core/service/stock.service';
 import { HistoricalStock, StockInfo } from './../core/interface/stock.interface';
 import { mockStocks } from '../shared/mock/stock.mock';
 
 import * as Chart from 'chart.js';
+import * as moment from 'moment'
 import { delay, tap } from 'rxjs/operators';
 
 @Component({
@@ -16,15 +16,14 @@ import { delay, tap } from 'rxjs/operators';
 })
 export class HomeComponent implements OnInit {
   @ViewChild('f') form: NgForm;
-  historicalStockData: HistoricalStock[] = [];  // 股票搜尋結果
+  historicalStockData: HistoricalStock[] = [];  // 30天股價資訊
   stocksInfo: StockInfo[];
   title: string;
   isHovered: boolean;
-  errorMsg: string;
+  chart: Chart;
 
   constructor(
     private stockService: StockService,
-    private datePipe: DatePipe
   ) { }
 
   ngOnInit() {
@@ -40,13 +39,11 @@ export class HomeComponent implements OnInit {
   }
 
   onSearchClick() {
-    const selectedMonth: Date = this.form.form.value.selectedMonth;
+    const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
     const req = {
-      startDate: this.datePipe.transform(selectedMonth, 'yyyy-MM-01'),
-      endDate: this.datePipe.transform(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0), 'yyyy-MM-dd'),
+      startDate: startDate,
       stockId: this.form.form.value.stockKeyword
     }
-
     this.stockService.getHistoricalStockData(req)
       .pipe(
         tap(res => this.historicalStockData = res.data),
@@ -74,7 +71,7 @@ export class HomeComponent implements OnInit {
         const data = {
           labels: xArray,
           datasets: [{
-            label: `${this.form.form.value.selectedMonth.getMonth() + 1}月份股價歷史紀錄`,
+            label: `股價歷史紀錄`,
             data: yArray,
             fill: false,
             borderColor: 'rgb(75, 192, 192)',

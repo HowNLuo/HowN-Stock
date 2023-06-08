@@ -14,40 +14,20 @@
       pattern="^[A-Z0-9]*$"
       minlength="4"
       maxlength="6"
+      autocomplete="off"
     >
     <datalist id="stockKeyword">
       <option *ngFor="let stockInfo of stocksInfo" value="{{stockInfo.stock_id}}">{{ stockInfo.stock_id }} {{ stockInfo.stock_name }}</option>
     </datalist>
   </div>
-  <div class="input-group col-md-3">
-    <div class="input-group-prepend">
-      <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
-    </div>
-    <input
-      type="text"
-      class="form-control"
-      placeholder=" 請選擇月份"
-      ngModel
-      name="selectedMonth"
-      required
-      bsDatepicker
-      [bsConfig]="{dateInputFormat: 'YYYY-MM', minMode: 'month'}"
-      autocomplete="off"
-    />
-  </div>
-  <button type="submit" class="btn btn-primary col-md-1" [disabled]="f.invalid">查詢</button>
+  <button type="submit" class="btn col-md-1" [disabled]="f.invalid">查詢</button>
 </form>
-
-<div class="mt-5 d-flex align-items-center flex-column" *ngIf="historicalStockData.length === 0">
-  <h1 *ngIf="!f.submitted">請輸入查詢資料🙂</h1>
-  <h1 *ngIf="errorMsg">{{ errorMsg }}</h1>
-</div>
 
 <div *ngIf="historicalStockData.length > 0" class="d-flex mt-5 mb-3 justify-content-between align-items-end">
   <h2>{{ title }}</h2>
-  <span type="button">
+  <span type="button" (mouseover)="toggleHover(true)" (mouseout)="toggleHover(false)">
     加入投資組合
-    <i class="fa-star" [class.fa-regular]="!isHovered" [class.fa-solid.fa-regular]="isHovered" (mouseover)="toggleHover(true)" (mouseout)="toggleHover(false)"></i>
+    <i class="fa-star" [class.fa-regular]="!isHovered" [class.fa-solid.fa-regular]="isHovered"></i>
   </span>
 </div>
 

@@ -23,7 +23,7 @@ export class StockService {
 
   // 取得股價日成交資訊
   getHistoricalStockData(req) {
-    return this.http.get<HistoricalStocks>(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${req.stockId}&start_date=${req.startDate}&end_date=${req.endDate}`)
+    return this.http.get<HistoricalStocks>(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${req.stockId}&start_date=${req.startDate}`)
       .pipe(
         // 錯誤處理
       )
