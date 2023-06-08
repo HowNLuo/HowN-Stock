@@ -1,4 +1,4 @@
-<form class="row mt-3" (ngSubmit)="onSearchClick()" #f="ngForm">
+<form class="row mt-5" (ngSubmit)="onSearchClick()" #f="ngForm">
   <div class="input-group col-md-4">
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="fas fa-search"></i></span>
@@ -7,14 +7,17 @@
       type="text"
       class="form-control"
       placeholder="搜尋台股代號/名稱"
-      ngModel
+      list="stockKeyword"
       name="stockKeyword"
+      ngModel
       required
       pattern="^[A-Z0-9]*$"
       minlength="4"
       maxlength="6"
-      autocomplete="off"
-    />
+    >
+    <datalist id="stockKeyword">
+      <option *ngFor="let stockInfo of stocksInfo" value="{{stockInfo.stock_id}}">{{ stockInfo.stock_id }} {{ stockInfo.stock_name }}</option>
+    </datalist>
   </div>
   <div class="input-group col-md-3">
     <div class="input-group-prepend">
@@ -41,7 +44,7 @@
 </div>
 
 <div *ngIf="historicalStockData.length > 0" class="d-flex mt-5 mb-3 justify-content-between align-items-end">
-  <h2>{{ stockInfo.data[0]?.stock_id}} {{ stockInfo.data[0]?.stock_name}}</h2>
+  <h2>{{ title }}</h2>
   <span type="button">
     加入投資組合
     <i class="fa-star" [class.fa-regular]="!isHovered" [class.fa-solid.fa-regular]="isHovered" (mouseover)="toggleHover(true)" (mouseout)="toggleHover(false)"></i>

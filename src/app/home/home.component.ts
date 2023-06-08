@@ -17,7 +17,8 @@ import { delay, tap } from 'rxjs/operators';
 export class HomeComponent implements OnInit {
   @ViewChild('f') form: NgForm;
   historicalStockData: HistoricalStock[] = [];  // 股票搜尋結果
-  stockInfo: StockInfo;
+  stocksInfo: StockInfo[];
+  title: string;
   isHovered: boolean;
   errorMsg: string;
 
@@ -27,6 +28,15 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.setDatalistOptions();
+  }
+
+  /** 設定台股代號選項 */
+  setDatalistOptions() {
+    this.stockService.getStocksInfo()
+      .pipe(
+        tap(res => this.stocksInfo = res.data)
+      ).subscribe();
   }
 
   onSearchClick() {
@@ -37,65 +47,52 @@ export class HomeComponent implements OnInit {
       stockId: this.form.form.value.stockKeyword
     }
 
-    this.stockService.getStockInfo(req)
-      .pipe(
-        tap(res => this.stockInfo = res)
-      ).subscribe();
-
     this.stockService.getHistoricalStockData(req)
       .pipe(
-        tap(res => {
-          if(res.status !== 200) {
-            this.errorMsg = res.msg + '😱';
-            this.historicalStockData = [];
-          } else if(res.data.length === 0) {
-            this.errorMsg = '查無資料🧐'
-            this.historicalStockData = [];
-          } else {
-            this.historicalStockData = res.data;
-          }
-        }),
+        tap(res => this.historicalStockData = res.data),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
+        const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === this.form.form.value.stockKeyword);
+        this.title = selectedStock.stock_id + ' ' + selectedStock.stock_name
         this.drawChart();
       });
   }
 
+    /** 繪製折線圖 */
+    drawChart() {
+      const canvas = document.getElementById('chart') as HTMLCanvasElement;
+      if(canvas) {
+        const ctx = canvas.getContext('2d');
+
+        let xArray = [];
+        let yArray = [];
+        this.historicalStockData.forEach(stockData => {
+          xArray.push(stockData.date.slice(-5));
+          yArray.push(stockData.close);
+        });
+
+        const data = {
+          labels: xArray,
+          datasets: [{
+            label: `${this.form.form.value.selectedMonth.getMonth() + 1}月份股價歷史紀錄`,
+            data: yArray,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        };
+
+        const options = {};
+
+        let chart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: options
+        });
+      };
+    }
+
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
-  }
-
-  /** 繪製折線圖 */
-  drawChart() {
-    const canvas = document.getElementById('chart') as HTMLCanvasElement;
-    if(canvas) {
-      const ctx = canvas.getContext('2d');
-
-      let xArray = [];
-      let yArray = [];
-      this.historicalStockData.forEach(stockData => {
-        xArray.push(stockData.date.slice(-5));
-        yArray.push(stockData.close);
-      });
-
-      const data = {
-        labels: xArray,
-        datasets: [{
-          label: `${this.form.form.value.selectedMonth.getMonth() + 1}月份股價歷史紀錄`,
-          data: yArray,
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
-      };
-
-      const options = {};
-
-      let chart = new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: options
-      });
-    };
   }
 }

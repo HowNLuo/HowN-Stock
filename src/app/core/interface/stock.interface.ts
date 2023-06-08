@@ -17,14 +17,16 @@ export interface HistoricalStock {
   Trading_turnover: number; // 交易筆數
 }
 
-export interface StockInfo {
+export interface StocksInfo {
   msg: string;
   status: number;
-  data: {
-    industry_category: string;
-    stock_id: string;
-    stock_name: string;
-    type: string;
-    date: string;
-  }[]
+  data: StockInfo[];
+}
+
+export interface StockInfo {
+  industry_category: string;
+  stock_id: string;
+  stock_name: string;
+  type: string;
+  date: string;
 }

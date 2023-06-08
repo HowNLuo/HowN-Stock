@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { HistoricalStocks, StockInfo } from '../interface/stock.interface';
+import { HistoricalStocks, StocksInfo } from '../interface/stock.interface';
 
 
 @Injectable({
@@ -14,8 +14,8 @@ export class StockService {
   ) { }
 
   // 取得個股資訊
-  getStockInfo(req) {
-    return this.http.get<StockInfo>(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo&data_id=${req.stockId}`)
+  getStocksInfo() {
+    return this.http.get<StocksInfo>(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo`)
       .pipe(
         // 錯誤處理
       )
