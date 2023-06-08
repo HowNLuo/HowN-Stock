@@ -1,10 +1,10 @@
-export interface HistoricalStocks {
+export interface TaiwanStockPriceRes {
   msg: string;
   status: number;
-  data: HistoricalStock[];
+  data: TaiwanStockPrice[];
 }
 
-export interface HistoricalStock {
+export interface TaiwanStockPrice {
   date: string;             // 成交日期
   stock_id: string;         // 股票代號
   Trading_Volume: number;   // 成交量
@@ -17,13 +17,13 @@ export interface HistoricalStock {
   Trading_turnover: number; // 交易筆數
 }
 
-export interface StocksInfo {
+export interface TaiwanStockInfoRes {
   msg: string;
   status: number;
-  data: StockInfo[];
+  data: TaiwanStockInfo[];
 }
 
-export interface StockInfo {
+export interface TaiwanStockInfo {
   industry_category: string;
   stock_id: string;
   stock_name: string;

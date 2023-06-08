@@ -1,6 +1,6 @@
-import { HistoricalStocks } from './../../core/interface/stock.interface';
+import { TaiwanStockPriceRes } from './../../core/interface/stock.interface';
 
-export const mockStocks: HistoricalStocks = {
+export const mockStocks: TaiwanStockPriceRes = {
   "msg": "success",
   "status": 200,
   "data": [
