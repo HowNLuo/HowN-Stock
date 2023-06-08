@@ -22,6 +22,13 @@ export class HomeComponent implements OnInit {
   isHovered: boolean;
   chart: Chart;
 
+  get dataNotFound() {
+    if(this.stocksInfo) {
+      return !this.stocksInfo.some(stockInfo => stockInfo.stock_id === this.form.form.value.keyword);
+    } else {
+      return true
+    }
+  }
   constructor(
     private stockService: StockService,
   ) { }

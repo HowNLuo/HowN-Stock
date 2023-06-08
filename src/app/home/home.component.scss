@@ -11,8 +11,13 @@
   grid-area: 1 / 2 / 2 / 5;
 }
 
-input.ng-invalid.ng-touched {
+.input-invalid {
   border: 1px solid red;
+}
+
+.invalid-hint {
+  color: red;
+  font-weight: bolder;
 }
 
 button {
