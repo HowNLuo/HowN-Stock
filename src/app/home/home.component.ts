@@ -58,6 +58,9 @@ export class HomeComponent implements OnInit {
     /** 繪製折線圖 */
     drawChart() {
       const canvas = document.getElementById('chart') as HTMLCanvasElement;
+      if(this.chart) {
+        this.chart.destroy();  // 預防canvas重複渲染
+      }
       if(canvas) {
         const ctx = canvas.getContext('2d');
 
@@ -81,7 +84,7 @@ export class HomeComponent implements OnInit {
 
         const options = {};
 
-        let chart = new Chart(ctx, {
+        this.chart = new Chart(ctx, {
           type: 'line',
           data: data,
           options: options
