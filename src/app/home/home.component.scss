@@ -15,11 +15,24 @@
   border: 1px solid red;
 }
 
-.invalid-hint {
+.hint-box {
   color: red;
   font-weight: bolder;
 }
 
 button {
   background-color: rgb(75, 192, 192);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }

@@ -20,21 +20,17 @@ import { PortfolioReq } from '../core/interface/portfolio.interface';
 })
 export class HomeComponent implements OnInit {
   @ViewChild('f') form: NgForm;
-  historicalStockData: TaiwanStockPrice[] = [];  // 30天股價資訊
-  stocksInfo: TaiwanStockInfo[];                 // 台股各股名稱、代碼
+  oneMonthStockData: TaiwanStockPrice[] = [];  // 30天股價資訊
+  stocksInfo: TaiwanStockInfo[];               // 台股各股名稱、代碼
   title: string;
   isHovered: boolean;
   chart: Chart;
   portfolio: PortfolioRes[];
   isInPortfolios: boolean;
+  isLoading: boolean = false;
 
-  get dataNotFound() {
-    if(this.stocksInfo) {
-      return !this.stocksInfo.some(stockInfo => stockInfo.stock_id === this.form.form.value.keyword);
-    } else {
-      return true
-    }
-  }
+  get dataNotFound() { return this.stocksInfo ? !this.stocksInfo.some(stockInfo => stockInfo.stock_id === this.form.form.value.keyword) : true; }
+
   constructor(
     private stockService: StockService,
     private portfolioService: PortfolioService
@@ -47,13 +43,12 @@ export class HomeComponent implements OnInit {
   /** 設定台股代號選項 */
   setDatalistOptions() {
     this.stockService.getTaiwanStockInfo()
-      .pipe(
-        tap(res => this.stocksInfo = res.data)
-      ).subscribe();
+      .subscribe(res => this.stocksInfo = res.data);
   }
 
   /** 提交表單，查詢股票30天的交易資訊 */
   onSearchClick() {
+    this.isLoading = true;
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
     const req = {
       startDate: startDate,
@@ -69,6 +64,7 @@ export class HomeComponent implements OnInit {
         }),
         tap(res => {
           this.portfolio = res;
+          this.isLoading = false;
         }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
@@ -77,20 +73,6 @@ export class HomeComponent implements OnInit {
       });
   }
 
-    /** 繪製折線圖 */
-    drawChart() {
-      const canvas = document.getElementById('chart') as HTMLCanvasElement;
-      if(this.chart) {
-        this.chart.destroy();  // 預防canvas重複渲染
-      }
-      if(canvas) {
-        const ctx = canvas.getContext('2d');
-
-        let xArray = [];
-        let yArray = [];
-        this.historicalStockData.forEach(stockData => {
-          xArray.push(stockData.date.slice(-5));
-          yArray.push(stockData.close);
   /** 從投資組合新增/移除 */
   setToPortfolios(stockId: string) {
     this.isLoading = true;
@@ -122,26 +104,42 @@ export class HomeComponent implements OnInit {
     this.isInPortfolios = !this.isInPortfolios;
   }
 
-        const data = {
-          labels: xArray,
-          datasets: [{
-            label: `股價歷史紀錄`,
-            data: yArray,
-            fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-          }]
-        };
-
-        const options = {};
-
-        this.chart = new Chart(ctx, {
-          type: 'line',
-          data: data,
-          options: options
-        });
-      };
+  /** 繪製折線圖 */
+  drawChart() {
+    const canvas = document.getElementById('chart') as HTMLCanvasElement;
+    if(this.chart) {
+      this.chart.destroy();  // 預防canvas重複渲染
     }
+    if(canvas) {
+      const ctx = canvas.getContext('2d');
+
+      let xArray = [];
+      let yArray = [];
+      this.oneMonthStockData.forEach(stockData => {
+        xArray.push(stockData.date.slice(-5));
+        yArray.push(stockData.close);
+      });
+
+      const data = {
+        labels: xArray.reverse(),
+        datasets: [{
+          label: `30日股價歷史紀錄`,
+          data: yArray.reverse(),
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      };
+
+      const options = {};
+
+      this.chart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+      });
+    };
+  }
 
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
