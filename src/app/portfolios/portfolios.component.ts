@@ -5,7 +5,7 @@ import { PortfolioService } from './../core/service/portfolio.service';
 @Component({
   selector: 'app-portfolios',
   templateUrl: './portfolios.component.html',
-  styleUrls: ['./portfolios.component.css']
+  styleUrls: ['./portfolios.component.scss']
 })
 export class PortfoliosComponent implements OnInit {
 
