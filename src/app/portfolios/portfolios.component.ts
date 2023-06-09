@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { PortfolioService } from './../core/service/portfolio.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-portfolios',
@@ -8,9 +9,10 @@ import { PortfolioService } from './../core/service/portfolio.service';
   styleUrls: ['./portfolios.component.scss']
 })
 export class PortfoliosComponent implements OnInit {
+  @ViewChild('f') form: NgForm;
 
   constructor(
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
   ) { }
 
   ngOnInit() {
@@ -18,6 +20,13 @@ export class PortfoliosComponent implements OnInit {
       .subscribe(res => {
         console.log(res);
       });
+    this.portfolioService.getCategory()
+      .subscribe(res => {
+        console.log(res)
+      })
   }
 
+  onCategoryNameSubmit() {
+
+  }
 }

@@ -1,4 +1,4 @@
-import { PortfolioRes } from './../interface/portfolio.interface';
+import { Portfolio, PortfolioRes, CategoryRes, Category, CategoryReq } from './../interface/portfolio.interface';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -20,10 +20,11 @@ constructor(
 
   // 取得投資組合
   getPortfolios() {
-    return this.http.get<PortfolioRes[]>(this.baseUrl + 'portfolios.json')
+    return this.http.get<PortfolioRes>(this.baseUrl + 'portfolios.json')
       .pipe(
+        map(res => res?.portfolio),
         map(res => {
-          const postsArray: PortfolioRes[] = [];
+          const postsArray: Portfolio[] = [];
           for(const key in res) {
             if(res.hasOwnProperty(key)) {
               postsArray.push({...res[key], id: key});
@@ -45,7 +46,41 @@ constructor(
 
   // 刪除投資組合
   deletePortFolio(id: string) {
-    return this.http.delete(this.baseUrl + `portfolios/${id}.json`)
+    return this.http.delete(this.baseUrl + `portfolios/portfolio/${id}.json`)
+      .pipe(
+        // 錯誤處理
+      )
+  }
+
+  // 取得類別
+  getCategory() {
+    return this.http.get<CategoryRes>(this.baseUrl + 'categories.json')
+      .pipe(
+        map(res => res?.category),
+        map(res => {
+          const postsArray: Category[] = [];
+          for(const key in res) {
+            if(res.hasOwnProperty(key)) {
+              postsArray.push({...res[key], id: key});
+            }
+          }
+          return postsArray;
+        }),
+        // 錯誤處理
+      )
+  }
+
+  // 新增類別
+  addCategory(req: CategoryReq) {
+    return this.http.post<{name: string}>(this.baseUrl + 'categories/category.json', req)
+      .pipe(
+        // 錯誤處理
+      )
+  }
+
+  // 刪除類別
+  deleteCategory(id: string) {
+    return this.http.delete(this.baseUrl + `categories/category/${id}.json`)
       .pipe(
         // 錯誤處理
       )

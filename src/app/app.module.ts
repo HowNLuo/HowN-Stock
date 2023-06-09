@@ -16,6 +16,7 @@ import { HomeComponent } from './home/home.component';
 import { StockInfoComponent } from './stock-info/stock-info.component';
 import { PortfolioComponent } from './portfolios/portfolio/portfolio.component';
 import { UserStocksDetailComponent } from './user-stocks-detail/user-stocks-detail.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { UserStocksDetailComponent } from './user-stocks-detail/user-stocks-deta
     HttpClientModule,
     BrowserAnimationsModule,
     BsDatepickerModule.forRoot(),
+    ModalModule.forRoot()
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

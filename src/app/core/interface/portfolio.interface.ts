@@ -5,8 +5,25 @@ export class PortfolioReq {
 }
 
 export class PortfolioRes {
+  portfolio: Portfolio[];
+}
+
+export class Portfolio {
   stockId: string;
   stockName: string;
   stockCategory: string;
+  id: string;
+}
+
+export class CategoryReq {
+  categoryName: string;
+}
+
+export class CategoryRes {
+  category: Category[];
+}
+
+export class Category {
+  category: string;
   id: string;
 }
