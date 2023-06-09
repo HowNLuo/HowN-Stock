@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { PortfolioService } from './../core/service/portfolio.service';
+
 @Component({
   selector: 'app-portfolios',
   templateUrl: './portfolios.component.html',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PortfoliosComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private portfolioService: PortfolioService
+  ) { }
 
   ngOnInit() {
+    this.portfolioService.getPortfolios()
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 
 }

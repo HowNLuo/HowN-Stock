@@ -1,3 +1,5 @@
+import { PortfolioRes } from './../core/interface/portfolio.interface';
+import { PortfolioService } from './../core/service/portfolio.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -6,8 +8,10 @@ import { TaiwanStockInfo, TaiwanStockPrice } from './../core/interface/stock.int
 import { mockStocks } from '../shared/mock/stock.mock';
 
 import * as Chart from 'chart.js';
-import * as moment from 'moment'
-import { delay, tap } from 'rxjs/operators';
+import * as moment from 'moment';
+import * as _ from 'lodash'
+import { delay, tap, concatMap, concat } from 'rxjs/operators';
+import { PortfolioReq } from '../core/interface/portfolio.interface';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +25,8 @@ export class HomeComponent implements OnInit {
   title: string;
   isHovered: boolean;
   chart: Chart;
+  portfolio: PortfolioRes[];
+  isInPortfolios: boolean;
 
   get dataNotFound() {
     if(this.stocksInfo) {
@@ -31,6 +37,7 @@ export class HomeComponent implements OnInit {
   }
   constructor(
     private stockService: StockService,
+    private portfolioService: PortfolioService
   ) { }
 
   ngOnInit() {
@@ -52,14 +59,21 @@ export class HomeComponent implements OnInit {
       startDate: startDate,
       stockId: this.form.form.value.keyword
     }
+    const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === this.form.form.value.keyword);
     this.stockService.getTaiwanStockPrice(req)
       .pipe(
-        tap(res => this.historicalStockData = res.data),
+        concatMap(res => {
+          this.oneMonthStockData = res.data.reverse();
+          this.title = selectedStock.stock_id + ' ' + selectedStock.stock_name;
+          return this.portfolioService.getPortfolios();
+        }),
+        tap(res => {
+          this.portfolio = res;
+        }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
-        const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === this.form.form.value.keyword);
-        this.title = selectedStock.stock_id + ' ' + selectedStock.stock_name
-        this.drawChart();
+          this.isInPortfolios = this.portfolio.some(stock => stock.stockId === selectedStock.stock_id);
+          this.drawChart();
       });
   }
 
@@ -77,7 +91,36 @@ export class HomeComponent implements OnInit {
         this.historicalStockData.forEach(stockData => {
           xArray.push(stockData.date.slice(-5));
           yArray.push(stockData.close);
+  /** 從投資組合新增/移除 */
+  setToPortfolios(stockId: string) {
+    this.isLoading = true;
+    const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === stockId);
+    const req: PortfolioReq = {
+      stockId: selectedStock.stock_id,
+      stockName: selectedStock.stock_name,
+      stockCategory: ''
+    }
+    if(this.isInPortfolios) {
+      const deleteId = this.portfolio.find(stock => stock.stockId === stockId).id;
+      this.portfolioService.deletePortFolio(deleteId)
+        .pipe(concatMap(() => this.portfolioService.getPortfolios()))
+        .subscribe(res => {
+          this.portfolio = res;
+          this.isLoading = false;
+          this.isHovered = false;
+          this.drawChart();
         });
+    } else {
+      this.portfolioService.addPortFolio(req)
+        .pipe(concatMap(() => this.portfolioService.getPortfolios()))
+        .subscribe(res => {
+          this.portfolio = res;
+          this.isLoading = false;
+          this.drawChart();
+        })
+    }
+    this.isInPortfolios = !this.isInPortfolios;
+  }
 
         const data = {
           labels: xArray,

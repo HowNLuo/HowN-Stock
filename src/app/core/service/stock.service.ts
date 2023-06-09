@@ -33,9 +33,5 @@ export class StockService {
         // 錯誤處理
       )
   }
-      .pipe(
-        // 錯誤處理
-      )
-  }
 
 }
