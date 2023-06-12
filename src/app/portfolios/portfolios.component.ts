@@ -16,6 +16,8 @@ export class PortfoliosComponent implements OnInit {
   portfolios: Portfolio[];
   currentCategoryId: string;
   isLoading: boolean = false;
+  editingItem: string = '';
+  editingName: string = '';
 
   constructor(
     private portfolioService: PortfolioService,
@@ -52,6 +54,32 @@ export class PortfoliosComponent implements OnInit {
   onCategoryNameSubmit(categoryName: string) {
     const req: CategoryReq = {categoryName: categoryName};
     this.portfolioService.addCategory(req)
+      .pipe(
+        concatMap(() => this.portfolioService.getCategories()),
+        tap(res => this.categories = res)
+      )
+      .subscribe();
+  }
+
+  startEdit(category: Category) {
+    this.editingItem = this.editingName = category.categoryName;
+  }
+
+  endEdit(id: string) {
+    this.editingItem = '';
+    const req: CategoryReq = {
+      categoryName: this.editingName
+    }
+    this.portfolioService.updateCategory(id, req)
+      .pipe(
+        concatMap(() => this.portfolioService.getCategories()),
+        tap(res => this.categories = res)
+      )
+      .subscribe();
+  }
+
+  deleteCategory(id: string) {
+    this.portfolioService.deleteCategory(id)
       .pipe(
         concatMap(() => this.portfolioService.getCategories()),
         tap(res => this.categories = res)

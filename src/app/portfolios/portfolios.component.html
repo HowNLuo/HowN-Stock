@@ -65,7 +65,23 @@
         </button>
       </div>
       <div class="modal-body">
-        <button type="button" class="btn mt-2"(click)="editCategories.hide()">確認</button>
+        <ul class="list-group">
+          <ng-container *ngFor="let category of categories">
+            <li class="list-group-item d-flex align-items-center justify-content-between"(dblclick)="startEdit(category)">
+              <span *ngIf="editingItem !== category.categoryName">{{ category.categoryName }}</span>
+              <input
+                type="text"
+                class="form-control"
+                *ngIf="editingItem === category.categoryName"
+                [value]="category.categoryName"
+                (blur)="endEdit(category.id)"
+                [(ngModel)]="editingName"
+              >
+              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(category.id)" ></i>
+            </li>
+          </ng-container>
+        </ul>
+        <button type="button" class="btn mt-3"(click)="editCategories.hide()">確認</button>
       </div>
     </div>
   </div>

@@ -30,7 +30,7 @@
   <div *ngIf="dataNotFound && f.valid">查無資料</div>
 </div>
 
-<ng-container *ngIf="f.submitted &&oneMonthStockData.length === 0">
+<ng-container *ngIf="f.submitted &&oneMonthStockData.length === 0 && !isLoading">
   <h1 class="mt-5 mb-3">
     該股於30日內無交易資訊
   </h1>

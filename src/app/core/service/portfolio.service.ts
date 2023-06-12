@@ -22,7 +22,6 @@ constructor(
   getPortfolios() {
     return this.http.get<PortfolioRes>(this.baseUrl + 'portfolios.json')
       .pipe(
-        map(res => res?.portfolio),
         map(res => {
           const postsArray: Portfolio[] = [];
           for(const key in res) {
@@ -38,7 +37,7 @@ constructor(
 
   // 新增投資組合
   addPortFolio(req: PortfolioReq) {
-    return this.http.post<{name: string}>(this.baseUrl + 'portfolios/portfolio.json', req)
+    return this.http.post<{name: string}>(this.baseUrl + 'portfolios.json', req)
       .pipe(
         // 錯誤處理
       )
@@ -46,7 +45,7 @@ constructor(
 
   // 刪除投資組合
   deletePortFolio(id: string) {
-    return this.http.delete(this.baseUrl + `portfolios/portfolio/${id}.json`)
+    return this.http.delete(this.baseUrl + `portfolios/${id}.json`)
       .pipe(
         // 錯誤處理
       )
@@ -56,7 +55,6 @@ constructor(
   getCategories() {
     return this.http.get<CategoryRes>(this.baseUrl + 'categories.json')
       .pipe(
-        map(res => res?.category),
         map(res => {
           const postsArray: Category[] = [];
           for(const key in res) {
@@ -72,7 +70,7 @@ constructor(
 
   // 新增類別
   addCategory(req: CategoryReq) {
-    return this.http.post<{name: string}>(this.baseUrl + 'categories/category.json', req)
+    return this.http.post<{name: string}>(this.baseUrl + 'categories.json', req)
       .pipe(
         // 錯誤處理
       )
@@ -80,7 +78,15 @@ constructor(
 
   // 刪除類別
   deleteCategory(id: string) {
-    return this.http.delete(this.baseUrl + `categories/category/${id}.json`)
+    return this.http.delete(this.baseUrl + `categories/${id}.json`)
+      .pipe(
+        // 錯誤處理
+      )
+  }
+
+  // 更新投資組合
+  updateCategory(id: string, req: CategoryReq) {
+    return this.http.put(this.baseUrl + `categories/${id}.json`, req)
       .pipe(
         // 錯誤處理
       )

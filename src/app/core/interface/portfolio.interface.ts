@@ -24,6 +24,6 @@ export class CategoryRes {
 }
 
 export class Category {
-  category: string;
+  categoryName: string;
   id: string;
 }
