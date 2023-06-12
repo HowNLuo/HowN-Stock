@@ -38,7 +38,7 @@ constructor(
 
   // 新增投資組合
   addPortFolio(req: PortfolioReq) {
-    return this.http.post<{name: string}>(this.baseUrl + 'portfolios.json', req)
+    return this.http.post<{name: string}>(this.baseUrl + 'portfolios/portfolio.json', req)
       .pipe(
         // 錯誤處理
       )
@@ -53,7 +53,7 @@ constructor(
   }
 
   // 取得類別
-  getCategory() {
+  getCategories() {
     return this.http.get<CategoryRes>(this.baseUrl + 'categories.json')
       .pipe(
         map(res => res?.category),

@@ -1,16 +1,15 @@
-import { PortfolioRes } from './../core/interface/portfolio.interface';
+import { Portfolio } from './../core/interface/portfolio.interface';
 import { PortfolioService } from './../core/service/portfolio.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { StockService } from './../core/service/stock.service';
 import { TaiwanStockInfo, TaiwanStockPrice } from './../core/interface/stock.interface';
-import { mockStocks } from '../shared/mock/stock.mock';
 
 import * as Chart from 'chart.js';
 import * as moment from 'moment';
 import * as _ from 'lodash'
-import { delay, tap, concatMap, concat } from 'rxjs/operators';
+import { delay, tap, concatMap } from 'rxjs/operators';
 import { PortfolioReq } from '../core/interface/portfolio.interface';
 
 @Component({
@@ -25,7 +24,7 @@ export class HomeComponent implements OnInit {
   title: string;
   isHovered: boolean;
   chart: Chart;
-  portfolio: PortfolioRes[];
+  portfolios: Portfolio[];
   isInPortfolios: boolean;
   isLoading: boolean = false;
 
@@ -63,12 +62,12 @@ export class HomeComponent implements OnInit {
           return this.portfolioService.getPortfolios();
         }),
         tap(res => {
-          this.portfolio = res;
+          this.portfolios = res;
           this.isLoading = false;
         }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
-          this.isInPortfolios = this.portfolio.some(stock => stock.stockId === selectedStock.stock_id);
+          this.isInPortfolios = this.portfolios.some(portfolio => portfolio.stockId === selectedStock.stock_id);
           this.drawChart();
       });
   }
@@ -83,11 +82,11 @@ export class HomeComponent implements OnInit {
       stockCategory: ''
     }
     if(this.isInPortfolios) {
-      const deleteId = this.portfolio.find(stock => stock.stockId === stockId).id;
+      const deleteId = this.portfolios.find(portfolio => portfolio.stockId === stockId).id;
       this.portfolioService.deletePortFolio(deleteId)
         .pipe(concatMap(() => this.portfolioService.getPortfolios()))
         .subscribe(res => {
-          this.portfolio = res;
+          this.portfolios = res;
           this.isLoading = false;
           this.isHovered = false;
           this.drawChart();
@@ -96,7 +95,7 @@ export class HomeComponent implements OnInit {
       this.portfolioService.addPortFolio(req)
         .pipe(concatMap(() => this.portfolioService.getPortfolios()))
         .subscribe(res => {
-          this.portfolio = res;
+          this.portfolios = res;
           this.isLoading = false;
           this.drawChart();
         })
@@ -126,7 +125,7 @@ export class HomeComponent implements OnInit {
           label: `30日股價歷史紀錄`,
           data: yArray.reverse(),
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
+          borderColor: '#2196F3',
           tension: 0.1
         }]
       };

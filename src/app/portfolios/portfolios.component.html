@@ -1,12 +1,24 @@
 <div class="row">
   <div class="col-md-12 d-flex mt-5 category-panel">
-    <button class="btn mr-3" (click)="smModal.show()">新增類別</button>
-    <button class="btn">編輯類別</button>
+    <button class="btn mr-3" (click)="addCategory.show()">新增類別</button>
+    <button class="btn" (click)="editCategories.show()">編輯類別</button>
   </div>
   <div class="col-md-12 mt-5">
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
+        <button
+          *ngFor="let category of categories"
+          class="nav-link"
+          [ngClass]="{'active': category.id === currentCategoryId}"
+          id="nav-home-tab" data-toggle="tab"
+          data-target="#nav-home"
+          type="button"
+          role="tab"
+          aria-controls="nav-home"
+          aria-selected="true"
+        >
+          {{ category.categoryName}}
+        </button>
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -15,17 +27,17 @@
   </div>
 </div>
 
-<div bsModal #smModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2">
+<div bsModal #addCategory="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
         <h4 id="dialog-sizes-name2" class="modal-title pull-left">新增類別</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="smModal.hide()">
+        <button type="button" class="close pull-right" aria-label="Close" (click)="addCategory.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="onCategoryNameSubmit()" #f="ngForm">
+        <form (ngSubmit)="onCategoryNameSubmit(f.controls.categoryName.value)" #f="ngForm">
           <input
             type="text"
             class="form-control"
@@ -36,9 +48,30 @@
             maxlength="6"
             autocomplete="off"
           >
-          <button type="submit" class="btn mt-2" [disabled]="f.invalid" (click)="smModal.hide()">送出</button>
+          <button type="submit" class="btn mt-2" [disabled]="f.invalid" (click)="addCategory.hide()">送出</button>
         </form>
       </div>
     </div>
+  </div>
+</div>
+
+<div bsModal #editCategories="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name2" class="modal-title pull-left">編輯類別</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="editCategories.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn mt-2"(click)="editCategories.hide()">確認</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-border text-light" role="status">
   </div>
 </div>
