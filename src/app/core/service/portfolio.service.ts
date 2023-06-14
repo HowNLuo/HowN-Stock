@@ -36,10 +36,10 @@ constructor(
   }
 
   // 新增投資組合
-  addPortFolio(req: PortfolioReq) {
-    return this.http.post<{name: string}>(this.baseUrl + 'portfolios.json', req)
+  updatePortFolio(id: string, req: PortfolioReq) {
+    return this.http.put<{name: string}>(this.baseUrl + `portfolios/${id}.json`, req)
       .pipe(
-        tap(() => console.log('addPortFolio')),
+        tap(() => console.log('updatePortFolio')),
         // 錯誤處理
       )
   }

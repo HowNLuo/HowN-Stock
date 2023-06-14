@@ -1,4 +1,4 @@
-import { Portfolio } from './../core/interface/portfolio.interface';
+import { Category, Portfolio } from './../core/interface/portfolio.interface';
 import { PortfolioService } from './../core/service/portfolio.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
@@ -18,17 +18,26 @@ import { PortfolioReq } from '../core/interface/portfolio.interface';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('f') form: NgForm;
-  oneMonthStockData: TaiwanStockPrice[] = [];  // 30天股價資訊
-  stocksInfo: TaiwanStockInfo[];               // 台股各股名稱、代碼
+  @ViewChild('keywordForm') keywordForm: NgForm;
+  oneMonthStockData: TaiwanStockPrice[] = [];
+  stocksInfo: TaiwanStockInfo[];
   title: string;
   isHovered: boolean;
   chart: Chart;
-  portfolios: Portfolio[];
-  isInPortfolios: boolean;
+  portfolios: Portfolio[] = [];
   isLoading: boolean = false;
+  categories: Category[];
+  selectedCategories: string[] = [];
+  selectedStock: TaiwanStockInfo;
 
-  get dataNotFound() { return this.stocksInfo ? !this.stocksInfo.some(stockInfo => stockInfo.stock_id === this.form.form.value.keyword) : true; }
+  get dataNotFound() { return !this.stocksInfo?.some(stockInfo => stockInfo.stock_id === this.keywordForm.form.value.keyword); }
+  get isInPortfolios() {
+    if(this.portfolios) {
+      return this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id);
+    } else {
+      return false;
+    }
+  }
 
   constructor(
     private stockService: StockService,
@@ -41,8 +50,12 @@ export class HomeComponent implements OnInit {
 
   /** 設定台股代號選項 */
   setDatalistOptions() {
+    this.isLoading = true;
     this.stockService.getTaiwanStockInfo()
-      .subscribe(res => this.stocksInfo = res.data);
+      .subscribe(res => {
+        this.stocksInfo = res.data;
+        this.isLoading = false;
+      });
   }
 
   /** 提交表單，查詢股票30天的交易資訊 */
@@ -51,55 +64,61 @@ export class HomeComponent implements OnInit {
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
     const req = {
       startDate: startDate,
-      stockId: this.form.form.value.keyword
+      stockId: this.keywordForm.form.value.keyword
     }
-    const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === this.form.form.value.keyword);
+    this.selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === this.keywordForm.form.value.keyword);
     this.stockService.getTaiwanStockPrice(req)
       .pipe(
         concatMap(res => {
           this.oneMonthStockData = res.data.reverse();
-          this.title = selectedStock.stock_id + ' ' + selectedStock.stock_name;
+          this.title = this.selectedStock.stock_id + ' ' + this.selectedStock.stock_name;
           return this.portfolioService.getPortfolios();
         }),
         tap(res => {
-          this.portfolios = res;
+          if(res.length > 0) {
+            this.portfolios = res;
+            this.selectedCategories = res.find(r => r.stockId === this.selectedStock.stock_id)?.categories ?? [];
+          }
           this.isLoading = false;
         }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
-          this.isInPortfolios = this.portfolios.some(portfolio => portfolio.stockId === selectedStock.stock_id);
           this.drawChart();
       });
   }
 
-  /** 從投資組合新增/移除 */
-  setToPortfolios(stockId: string) {
-    this.isLoading = true;
-    const selectedStock = this.stocksInfo.find(stockInfo => stockInfo.stock_id === stockId);
+  startClassifyPortfolio() {
+    if(!this.categories) {
+      this.portfolioService.getCategories()
+        .subscribe(res => {
+            this.categories = res;
+          }
+        )
+    }
+  }
+
+  endClassifyPortfolio() {
     const req: PortfolioReq = {
-      stockId: selectedStock.stock_id,
-      stockName: selectedStock.stock_name,
-      category: ['']
-    }
-    if(this.isInPortfolios) {
-      const deleteId = this.portfolios.find(portfolio => portfolio.stockId === stockId).id;
-      this.portfolioService.deletePortFolio(deleteId)
-        .pipe(concatMap(() => this.portfolioService.getPortfolios()))
-        .subscribe(res => {
-          this.portfolios = res;
-          this.isLoading = false;
-          this.drawChart();
-        });
+      stockId: this.selectedStock.stock_id,
+      stockName: this.selectedStock.stock_name,
+      categories: this.selectedCategories
+    };
+    if(this.selectedCategories.length === 0) {
+      this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
+        .pipe(
+          concatMap(() => this.portfolioService.getPortfolios()),
+          tap(res => this.portfolios = res)
+        )
+        .subscribe();
     } else {
-      this.portfolioService.addPortFolio(req)
-        .pipe(concatMap(() => this.portfolioService.getPortfolios()))
-        .subscribe(res => {
-          this.portfolios = res;
-          this.isLoading = false;
-          this.drawChart();
-        })
+      this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
+        .pipe(
+          concatMap(() => this.portfolioService.getPortfolios()),
+          tap(res => this.portfolios = res)
+        )
+        .subscribe();
+
     }
-    this.isInPortfolios = !this.isInPortfolios;
   }
 
   /** 繪製折線圖 */
@@ -141,5 +160,26 @@ export class HomeComponent implements OnInit {
 
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
+  }
+
+  toggleCategory(categoryName: string, isChecked: boolean) {
+    if(isChecked) {
+      this.selectedCategories.push(categoryName);
+    } else {
+      this.selectedCategories = this.selectedCategories.filter(category => category !== categoryName);
+    }
+  }
+
+  isInCategory(categoryName: string) {
+    if(this.portfolios.length > 0) {
+      const selectedPortfolio = this.portfolios.find(portfolio => this.selectedStock.stock_id === portfolio.stockId);
+      if(selectedPortfolio) {
+        return selectedPortfolio.categories.includes(categoryName);
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }
