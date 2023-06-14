@@ -1,7 +1,7 @@
 export class PortfolioReq {
   stockId: string;
   stockName: string;
-  stockCategory: string;
+  category: string[];
 }
 
 export class PortfolioRes {
@@ -11,7 +11,7 @@ export class PortfolioRes {
 export class Portfolio {
   stockId: string;
   stockName: string;
-  stockCategory: string;
+  category: string;
   id: string;
 }
 

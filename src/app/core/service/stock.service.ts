@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 
 import { TaiwanStockInfoRes, TaiwanStockPriceRes } from '../interface/stock.interface';
 
+import { tap } from 'rxjs/operators'
+
 export enum Dataset {
   TaiwanStockInfo = 'TaiwanStockInfo',
   TaiwanStockPrice = 'TaiwanStockPrice'
@@ -22,6 +24,7 @@ export class StockService {
   getTaiwanStockInfo() {
     return this.http.get<TaiwanStockInfoRes>(this.baseUrl + `dataset=${Dataset.TaiwanStockInfo}`)
       .pipe(
+        tap(() => console.log('getTaiwanStockInfo')),
         // 錯誤處理
       )
   }
@@ -30,6 +33,7 @@ export class StockService {
   getTaiwanStockPrice(req) {
     return this.http.get<TaiwanStockPriceRes>(this.baseUrl + `dataset=${Dataset.TaiwanStockPrice}` + `&data_id=${req.stockId}` + `&start_date=${req.startDate}`)
       .pipe(
+        tap(() => console.log('getTaiwanStockPrice')),
         // 錯誤處理
       )
   }

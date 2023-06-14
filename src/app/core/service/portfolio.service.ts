@@ -4,8 +4,7 @@ import { Injectable } from '@angular/core';
 
 import { PortfolioReq } from '../interface/portfolio.interface';
 
-import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, tap, concatMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +30,7 @@ constructor(
           }
           return postsArray;
         }),
+        tap(() => console.log('getPortfolios')),
         // 錯誤處理
       )
   }
@@ -39,6 +39,7 @@ constructor(
   addPortFolio(req: PortfolioReq) {
     return this.http.post<{name: string}>(this.baseUrl + 'portfolios.json', req)
       .pipe(
+        tap(() => console.log('addPortFolio')),
         // 錯誤處理
       )
   }
@@ -47,6 +48,7 @@ constructor(
   deletePortFolio(id: string) {
     return this.http.delete(this.baseUrl + `portfolios/${id}.json`)
       .pipe(
+        tap(() => console.log('deletePortFolio')),
         // 錯誤處理
       )
   }
@@ -64,6 +66,7 @@ constructor(
           }
           return postsArray;
         }),
+        tap(() => console.log('getCategories')),
         // 錯誤處理
       )
   }
@@ -72,6 +75,7 @@ constructor(
   addCategory(req: CategoryReq) {
     return this.http.post<{name: string}>(this.baseUrl + 'categories.json', req)
       .pipe(
+        tap(() => console.log('addCategory')),
         // 錯誤處理
       )
   }
@@ -80,14 +84,16 @@ constructor(
   deleteCategory(id: string) {
     return this.http.delete(this.baseUrl + `categories/${id}.json`)
       .pipe(
+        tap(() => console.log('deleteCategory')),
         // 錯誤處理
       )
   }
 
   // 更新投資組合
-  updateCategory(id: string, req: CategoryReq) {
-    return this.http.put(this.baseUrl + `categories/${id}.json`, req)
+  updateCategories(req) {
+    return this.http.put(this.baseUrl + 'categories.json', req)
       .pipe(
+        tap(() => console.log('updateCategories')),
         // 錯誤處理
       )
   }

@@ -21,3 +21,16 @@
   align-items: center;
   z-index: 9999;
 }
+
+.dragging {
+  transform: scale(1);
+  transition: transform 150ms;
+}
+
+.dragging.dragging-enter {
+  transform: scale(1.1);
+}
+
+.dragging.dragging-leave {
+  transform: scale(1);
+}

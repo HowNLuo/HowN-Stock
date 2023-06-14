@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit {
     const req: PortfolioReq = {
       stockId: selectedStock.stock_id,
       stockName: selectedStock.stock_name,
-      stockCategory: ''
+      category: ['']
     }
     if(this.isInPortfolios) {
       const deleteId = this.portfolios.find(portfolio => portfolio.stockId === stockId).id;
@@ -88,7 +88,6 @@ export class HomeComponent implements OnInit {
         .subscribe(res => {
           this.portfolios = res;
           this.isLoading = false;
-          this.isHovered = false;
           this.drawChart();
         });
     } else {

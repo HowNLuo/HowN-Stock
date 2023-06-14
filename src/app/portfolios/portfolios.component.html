@@ -1,7 +1,8 @@
 <div class="row">
   <div class="col-md-12 d-flex mt-5 category-panel">
     <button class="btn mr-3" (click)="addCategory.show()">新增類別</button>
-    <button class="btn" (click)="editCategories.show()">編輯類別</button>
+    <button class="btn" (click)="editCategories.show(); startEditCategories()">編輯類別</button>
+    <button class="btn ml-3" (click)="test()">test</button>
   </div>
   <div class="col-md-12 mt-5">
     <nav>
@@ -22,7 +23,7 @@
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">test</div>
+
     </div>
   </div>
 </div>
@@ -37,7 +38,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="onCategoryNameSubmit(f.controls.categoryName.value)" #f="ngForm">
+        <form (ngSubmit)="onAddCategorySubmit(f.controls.categoryName.value)" #f="ngForm">
           <input
             type="text"
             class="form-control"
@@ -66,22 +67,31 @@
       </div>
       <div class="modal-body">
         <ul class="list-group">
-          <ng-container *ngFor="let category of categories">
-            <li class="list-group-item d-flex align-items-center justify-content-between"(dblclick)="startEdit(category)">
+          <ng-container *ngFor="let category of categroiesEdited; let i = index">
+            <li
+              class="list-group-item d-flex align-items-center justify-content-between"
+              (dblclick)="startEditCategoryName(category)"
+              [class.dragging]="isDragging && i === draggedIndex"
+              draggable="true"
+              (dragstart)="onDragStart(i)"
+              (dragover)="onDragOver($event, i)"
+              (dragend)="onDragEnd()"
+            >
+              <i class="fa-solid fa-bars"></i>
               <span *ngIf="editingItem !== category.categoryName">{{ category.categoryName }}</span>
               <input
                 type="text"
-                class="form-control"
+                class="form-control ml-3 mr-3"
                 *ngIf="editingItem === category.categoryName"
                 [value]="category.categoryName"
-                (blur)="endEdit(category.id)"
+                (blur)="endEditCategoryName(i)"
                 [(ngModel)]="editingName"
               >
-              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(category.id)" ></i>
+              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(i)" ></i>
             </li>
           </ng-container>
         </ul>
-        <button type="button" class="btn mt-3"(click)="editCategories.hide()">確認</button>
+        <button type="button" class="btn mt-3"(click)="editCategories.hide(); endEditCategories()">確認</button>
       </div>
     </div>
   </div>
