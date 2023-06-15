@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit {
   selectedCategories: string[] = [];
   selectedStock: TaiwanStockInfo;
   selectedPortfolio: Portfolio;
+  cloneSelectedCategories: string[];
 
   get dataNotFound() { return !this.stocksInfo?.some(stockInfo => stockInfo.stock_id === this.keywordForm.form.value.keyword); }
   get isInPortfolios() {
@@ -79,7 +80,6 @@ export class HomeComponent implements OnInit {
           if(res.length > 0) {
             this.portfolios = res;
             this.selectedPortfolio = res.find(portfolio => portfolio.stockId === this.keywordForm.form.value.keyword);
-            this.selectedCategories = res.find(r => r.stockId === this.selectedStock.stock_id)?.categories ?? [];
           }
           this.isLoading = false;
         }),
@@ -99,14 +99,11 @@ export class HomeComponent implements OnInit {
           }
         )
     }
+    this.selectedCategories = this.portfolios.find(portfolio => portfolio.stockId === this.selectedStock.stock_id)?.categories ?? [];
+    this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
   }
 
   endClassifyPortfolio() {
-    const req: PortfolioReq = {
-      stockId: this.selectedStock.stock_id,
-      stockName: this.selectedStock.stock_name,
-      categories: this.selectedCategories
-    };
     if(this.selectedCategories.length === 0) {
       this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
         .pipe(
@@ -115,6 +112,11 @@ export class HomeComponent implements OnInit {
         )
         .subscribe();
     } else {
+      const req: PortfolioReq = {
+        stockId: this.selectedStock.stock_id,
+        stockName: this.selectedStock.stock_name,
+        categories: this.selectedCategories
+      };
       this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
         .pipe(
           concatMap(() => this.portfolioService.getPortfolios()),
@@ -165,30 +167,16 @@ export class HomeComponent implements OnInit {
     this.isHovered = hovered;
   }
 
-  toggleCategory(categoryName: string, isChecked: boolean) {
+  toggleCategory(categoryId: string, isChecked: boolean) {
     if(isChecked) {
-      this.selectedCategories.push(categoryName);
+      this.selectedCategories.push(categoryId);
     } else {
-      this.selectedCategories = this.selectedCategories.filter(category => category !== categoryName);
+      this.selectedCategories = this.selectedCategories.filter(category => category !== categoryId);
     }
   }
 
-  isInCategory(categoryName: string) {
-    if(this.portfolios.length > 0) {
-      if(this.selectedPortfolio) {
-        return this.selectedPortfolio.categories.includes(categoryName);
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  test() {
-    console.log(this.categories)
-    console.log(this.portfolios)
-    console.log(this.selectedCategories)
-    console.log(this.selectedPortfolio)
+  /** 還原選取的 */
+  revertCategory() {
+    this.selectedCategories = this.cloneSelectedCategories;
   }
 }

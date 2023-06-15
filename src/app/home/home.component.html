@@ -110,7 +110,7 @@
   </div>
 </div>
 
-<div bsModal #addPortfolio="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2">
+<div bsModal #addPortfolio="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2" (onHidden)="revertCategory()">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -123,12 +123,13 @@
         <ul class="list-group mb-3">
           <li class="list-group-item" *ngFor="let category of categories">
             <div class="form-check">
-              <input class="form-check-input"
+              <input
+                class="form-check-input"
                 type="checkbox"
                 [id]="category.id"
-                [checked]="isInCategory(category.categoryName)"
-                (change)="toggleCategory(category.categoryName, $event.target.checked)"
-                >
+                [checked]="selectedCategories.includes(category.id)"
+                (change)="toggleCategory(category.id, $event.target.checked)"
+              >
               <label class="form-check-label" [for]="category.id">
                 {{ category.categoryName }}
               </label>
@@ -136,7 +137,6 @@
           </li>
         </ul>
         <button type="submit" class="btn search-button" (click)="endClassifyPortfolio();addPortfolio.hide()">確認</button>
-        <button type="submit" class="btn search-button ml-3" (click)="test()">test</button>
       </form>
     </div>
   </div>

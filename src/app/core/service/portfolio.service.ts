@@ -44,6 +44,15 @@ constructor(
       )
   }
 
+  // 新增投資組合
+  updatePortFolios(req: Portfolio[]) {
+    return this.http.put<{name: string}>(this.baseUrl + `portfolios.json`, req)
+      .pipe(
+        tap(() => console.log('updatePortFolios')),
+        // 錯誤處理
+      )
+  }
+
   // 刪除投資組合
   deletePortFolio(id: string) {
     return this.http.delete(this.baseUrl + `portfolios/${id}.json`)

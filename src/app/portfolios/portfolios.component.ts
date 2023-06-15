@@ -24,6 +24,7 @@ export class PortfoliosComponent implements OnInit {
   editingItem: string = '';
   editingName: string = '';
   categroiesEdited: Category[];
+  portfoliosEdited: Portfolio[];
   isDragging: boolean = false;
   draggedIndex: number;
   currentCategory: Category;
@@ -54,11 +55,13 @@ export class PortfoliosComponent implements OnInit {
                     this.categories = res;
                     this.currentCategory = res[0];
                     this.changeTab(res[0].id);
+                    this.isLoading = false;
                   });
               } else {
                 this.categories = res;
                 this.currentCategory = res[0];
                 this.changeTab(res[0].id);
+                this.isLoading = false;
               }
             })
           )
@@ -67,21 +70,20 @@ export class PortfoliosComponent implements OnInit {
   }
 
   changeTab(id: string) {
-    this.isLoading = true;
     this.currentCategory = this.categories.find(category => category.id === id);
-    this.currentPortfolios = this.portfolios.filter(portfolio => portfolio.categories.includes(this.currentCategory.categoryName));
+    if(this.portfolios) {
+
+    }
+    this.currentPortfolios = this.portfolios.filter(portfolio => portfolio.categories.includes(this.currentCategory.id));
 
     this.getCurrentPortfoliosStockInfo();
   }
 
   getCurrentPortfoliosStockInfo() {
     this.currentPortfoliosStockInfo = [];
+
     // 取一個月前的日期，預防股票休市
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD');
-
-    if(this.currentPortfolios.length === 0 ) {
-      this.isLoading = false;
-    };
 
     const observables = this.currentPortfolios.map(portfolio => {
       const req: TaiwanStockPriceReq = {
@@ -95,7 +97,6 @@ export class PortfoliosComponent implements OnInit {
       res.forEach(r => {
         this.currentPortfoliosStockInfo.push(r.data[r.data.length - 1]);
       });
-      this.isLoading = false;
     });
   }
 
@@ -112,6 +113,7 @@ export class PortfoliosComponent implements OnInit {
 
   startEditCategories() {
     this.categroiesEdited = _.cloneDeep(this.categories);
+    this.portfoliosEdited = _.cloneDeep(this.portfolios);
   }
 
   endEditCategories() {
@@ -124,8 +126,21 @@ export class PortfoliosComponent implements OnInit {
           categoryName: category.categoryName
         };
       })
+
       this.portfolioService.updateCategories(transformedData)
-        .subscribe(() => this.changeTab(this.currentCategory.id));
+        .pipe(
+          concatMap(() => this.portfolioService.updatePortFolios(this.portfoliosEdited))
+        )
+        .subscribe(() => {
+          this.portfolios = this.portfoliosEdited;
+          if(this.currentCategory.id) {
+            this.changeTab(this.currentCategory.id);
+          } else {
+            this.currentCategory = this.categories[0];
+            this.changeTab(this.categories[0].id);
+          }
+          this.isLoading = false;
+        });
     }
   }
 
@@ -138,8 +153,12 @@ export class PortfoliosComponent implements OnInit {
     this.categroiesEdited[index].categoryName = this.editingName;
   }
 
-  deleteCategory(index: number) {
+  deleteCategory(categoryId: string, index: number) {
     this.categroiesEdited.splice(index, 1);
+    this.portfoliosEdited.forEach(portfolio => {
+      portfolio.categories = portfolio.categories.filter(category => category !== categoryId);
+    });
+    this.portfoliosEdited.filter(portfolio => portfolio.categories.length === 0);
   }
 
   onDragStart(index: number) {
@@ -150,13 +169,7 @@ export class PortfoliosComponent implements OnInit {
   onDragOver(event: DragEvent, index: number) {
     event.preventDefault();
     if (this.draggedIndex !== index) {
-      const draggedItem = this.categroiesEdited[this.draggedIndex];
-      const dragOverItem = this.categroiesEdited[index];
-      const cloneDraggedItem = _.cloneDeep(draggedItem);
-      draggedItem.id = dragOverItem.id;
-      dragOverItem.id = cloneDraggedItem.id;
-      this.categroiesEdited.splice(this.draggedIndex, 1);
-      this.categroiesEdited.splice(index, 0, draggedItem);
+      [this.categroiesEdited[this.draggedIndex], this.categroiesEdited[index]] = [this.categroiesEdited[index], this.categroiesEdited[this.draggedIndex]];
       this.draggedIndex = index;
     };
   }
@@ -167,10 +180,9 @@ export class PortfoliosComponent implements OnInit {
   }
 
   test() {
-    console.log(this.categories)
+    console.log('categroiesEdited',this.categroiesEdited)
     console.log(this.portfolios)
-    console.log(this.currentCategory)
-    console.log(this.currentPortfolios)
+    console.log(this.portfoliosEdited)
   }
 
 }

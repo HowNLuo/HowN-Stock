@@ -117,11 +117,12 @@
                 (blur)="endEditCategoryName(i)"
                 [(ngModel)]="editingName"
               >
-              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(i)" ></i>
+              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(category.id, i)" ></i>
             </li>
           </ng-container>
         </ul>
-        <button type="button" class="btn mt-3"(click)="editCategories.hide(); endEditCategories()">確認</button>
+        <button type="button" class="btn mt-3" (click)="editCategories.hide(); endEditCategories()">確認</button>
+        <button type="button" class="btn ml-3"(click)="test()">test</button>
       </div>
     </div>
   </div>
