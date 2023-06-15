@@ -10,20 +10,50 @@
         <button
           *ngFor="let category of categories"
           class="nav-link"
-          [ngClass]="{'active': category.id === currentCategoryId}"
+          [ngClass]="{'active': category.id === currentCategory.id}"
           id="nav-home-tab" data-toggle="tab"
           data-target="#nav-home"
           type="button"
           role="tab"
           aria-controls="nav-home"
           aria-selected="true"
+          (click)="changeTab(category.id)"
         >
           {{ category.categoryName}}
         </button>
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
-
+      <table class="table table-fixed">
+        <thead>
+          <tr>
+            <th>代號</th>
+            <th>日期</th>
+            <th>成交股數</th>
+            <th>成交金額</th>
+            <th>開盤價</th>
+            <th>最高價</th>
+            <th>最低價</th>
+            <th>收盤價</th>
+            <th>買賣價差</th>
+            <th>成交筆數</th>
+          </tr>
+        </thead>
+        <tbody class="list-unstyled">
+          <tr *ngFor="let portfolioStockInfo of currentPortfoliosStockInfo">
+            <td>{{ portfolioStockInfo.stock_id }}</td>
+            <td>{{ portfolioStockInfo.date }}</td>
+            <td>{{ portfolioStockInfo.Trading_Volume  | number }}</td>
+            <td>{{ portfolioStockInfo.Trading_money  | number }}</td>
+            <td>{{ portfolioStockInfo.open  | number }}</td>
+            <td>{{ portfolioStockInfo.max  | number }}</td>
+            <td>{{ portfolioStockInfo.min  | number }}</td>
+            <td>{{ portfolioStockInfo.close  | number }}</td>
+            <td>{{ portfolioStockInfo.spread  | number }}</td>
+            <td>{{ portfolioStockInfo.Trading_turnover  | number }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

@@ -1,3 +1,8 @@
+export interface TaiwanStockPriceReq {
+  stockId: string;
+  startDate: string;
+}
+
 export interface TaiwanStockPriceRes {
   msg: string;
   status: number;

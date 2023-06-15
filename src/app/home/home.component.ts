@@ -4,7 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { StockService } from './../core/service/stock.service';
-import { TaiwanStockInfo, TaiwanStockPrice } from './../core/interface/stock.interface';
+import { TaiwanStockInfo, TaiwanStockPrice, TaiwanStockPriceReq } from './../core/interface/stock.interface';
 
 import * as Chart from 'chart.js';
 import * as moment from 'moment';
@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
   categories: Category[];
   selectedCategories: string[] = [];
   selectedStock: TaiwanStockInfo;
+  selectedPortfolio: Portfolio;
 
   get dataNotFound() { return !this.stocksInfo?.some(stockInfo => stockInfo.stock_id === this.keywordForm.form.value.keyword); }
   get isInPortfolios() {
@@ -62,7 +63,7 @@ export class HomeComponent implements OnInit {
   onSearchClick() {
     this.isLoading = true;
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
-    const req = {
+    const req: TaiwanStockPriceReq = {
       startDate: startDate,
       stockId: this.keywordForm.form.value.keyword
     }
@@ -77,6 +78,7 @@ export class HomeComponent implements OnInit {
         tap(res => {
           if(res.length > 0) {
             this.portfolios = res;
+            this.selectedPortfolio = res.find(portfolio => portfolio.stockId === this.keywordForm.form.value.keyword);
             this.selectedCategories = res.find(r => r.stockId === this.selectedStock.stock_id)?.categories ?? [];
           }
           this.isLoading = false;
@@ -89,9 +91,11 @@ export class HomeComponent implements OnInit {
 
   startClassifyPortfolio() {
     if(!this.categories) {
+      this.isLoading = true;
       this.portfolioService.getCategories()
         .subscribe(res => {
             this.categories = res;
+            this.isLoading = false;
           }
         )
     }
@@ -117,7 +121,6 @@ export class HomeComponent implements OnInit {
           tap(res => this.portfolios = res)
         )
         .subscribe();
-
     }
   }
 
@@ -172,14 +175,20 @@ export class HomeComponent implements OnInit {
 
   isInCategory(categoryName: string) {
     if(this.portfolios.length > 0) {
-      const selectedPortfolio = this.portfolios.find(portfolio => this.selectedStock.stock_id === portfolio.stockId);
-      if(selectedPortfolio) {
-        return selectedPortfolio.categories.includes(categoryName);
+      if(this.selectedPortfolio) {
+        return this.selectedPortfolio.categories.includes(categoryName);
       } else {
         return false;
       }
     } else {
       return false;
     }
+  }
+
+  test() {
+    console.log(this.categories)
+    console.log(this.portfolios)
+    console.log(this.selectedCategories)
+    console.log(this.selectedPortfolio)
   }
 }
