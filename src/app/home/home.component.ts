@@ -18,28 +18,25 @@ import { PortfolioReq } from '../core/interface/portfolio.interface';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('keywordForm') keywordForm: NgForm;
-  oneMonthStockData: TaiwanStockPrice[] = [];
-  stocksInfo: TaiwanStockInfo[];
-  title: string;
-  isHovered: boolean;
-  chart: Chart;
-  portfolios: Portfolio[] = [];
-  isLoading: boolean = false;
-  categories: Category[];
-  selectedCategories: string[] = [];
-  selectedStock: TaiwanStockInfo;
-  selectedPortfolio: Portfolio;
-  cloneSelectedCategories: string[];
+  @ViewChild('keywordForm') keywordForm: NgForm;  // 搜尋欄位
+  oneMonthStockData: TaiwanStockPrice[] = [];     // 30天內股票成交資訊
+  stocksInfo: TaiwanStockInfo[];                  // 所有個股基本資訊
+  title: string;                                  // 所選股票-代號+名稱
+  isHovered: boolean;                             // 懸停星號
+  chart: Chart;                                   // 折線圖
+  isLoading: boolean = false;                     // 判斷是否加載中
+  portfolios: Portfolio[] = [];                   // 所有投資組合
+  categories: Category[];                         // 所有類別
+  selectedStock: TaiwanStockInfo;                 // 所選股票的基本資訊
+  selectedPortfolio: Portfolio;                   // 所選股票的投資組合資訊
+  selectedCategories: string[] = [];              // 所選股票的類別(編輯)
+  cloneSelectedCategories: string[];              // 所選股票的類別(初始)
 
-  get dataNotFound() { return !this.stocksInfo?.some(stockInfo => stockInfo.stock_id === this.keywordForm.form.value.keyword); }
-  get isInPortfolios() {
-    if(this.portfolios) {
-      return this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id);
-    } else {
-      return false;
-    }
-  }
+  // 搜尋欄位是否查無個股
+  get dataNotFound() { return this.stocksInfo?.every(stockInfo => stockInfo.stock_id !== this.keywordForm.form.value.keyword); }
+
+  // 所選股票是否加入至投資組合
+  get isInPortfolios() { return this.portfolios ? this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id) : false; }
 
   constructor(
     private stockService: StockService,
@@ -89,6 +86,7 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  /** 開始分類投資組合至各類別 */
   startClassifyPortfolio() {
     if(!this.categories) {
       this.isLoading = true;
@@ -103,9 +101,10 @@ export class HomeComponent implements OnInit {
     this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
   }
 
+  /** 提交分類結果 */
   endClassifyPortfolio() {
     if(this.selectedCategories.length === 0) {
-      this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
+      this.portfolioService.deletePortFolio(this.selectedPortfolio.stockId)
         .pipe(
           concatMap(() => this.portfolioService.getPortfolios()),
           tap(res => this.portfolios = res)
@@ -113,11 +112,11 @@ export class HomeComponent implements OnInit {
         .subscribe();
     } else {
       const req: PortfolioReq = {
-        stockId: this.selectedStock.stock_id,
-        stockName: this.selectedStock.stock_name,
+        stockId: this.selectedPortfolio.stockId,
+        stockName: this.selectedPortfolio.stockName,
         categories: this.selectedCategories
       };
-      this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
+      this.portfolioService.updatePortFolio(this.selectedPortfolio.stockId, req)
         .pipe(
           concatMap(() => this.portfolioService.getPortfolios()),
           tap(res => this.portfolios = res)
@@ -163,10 +162,12 @@ export class HomeComponent implements OnInit {
     };
   }
 
+  /** 懸停/離開 */
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
   }
 
+  /** 勾選類別 */
   toggleCategory(categoryId: string, isChecked: boolean) {
     if(isChecked) {
       this.selectedCategories.push(categoryId);
@@ -175,7 +176,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  /** 還原選取的 */
+  /** 還原選取的類別 */
   revertCategory() {
     this.selectedCategories = this.cloneSelectedCategories;
   }

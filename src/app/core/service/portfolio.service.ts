@@ -17,7 +17,7 @@ constructor(
   private http: HttpClient
 ) { }
 
-  // 取得投資組合
+  /** 取得所有投資組合 */
   getPortfolios() {
     return this.http.get<PortfolioRes>(this.baseUrl + 'portfolios.json')
       .pipe(
@@ -35,7 +35,7 @@ constructor(
       )
   }
 
-  // 新增投資組合
+  /** 新增投資組合 */
   updatePortFolio(id: string, req: PortfolioReq) {
     return this.http.put<{name: string}>(this.baseUrl + `portfolios/${id}.json`, req)
       .pipe(
@@ -44,7 +44,7 @@ constructor(
       )
   }
 
-  // 新增投資組合
+  /** 更新所有投資組合 */
   updatePortFolios(req: Portfolio[]) {
     return this.http.put<{name: string}>(this.baseUrl + `portfolios.json`, req)
       .pipe(
@@ -53,7 +53,7 @@ constructor(
       )
   }
 
-  // 刪除投資組合
+  /** 刪除指定投資組合 */
   deletePortFolio(id: string) {
     return this.http.delete(this.baseUrl + `portfolios/${id}.json`)
       .pipe(
@@ -62,7 +62,7 @@ constructor(
       )
   }
 
-  // 取得類別
+  /** 取得所有類別 */
   getCategories() {
     return this.http.get<CategoryRes>(this.baseUrl + 'categories.json')
       .pipe(
@@ -80,7 +80,7 @@ constructor(
       )
   }
 
-  // 新增類別
+  /** 新增類別 */
   addCategory(req: CategoryReq) {
     return this.http.post<{name: string}>(this.baseUrl + 'categories.json', req)
       .pipe(
@@ -89,7 +89,7 @@ constructor(
       )
   }
 
-  // 刪除類別
+  /** 刪除指定類別 */
   deleteCategory(id: string) {
     return this.http.delete(this.baseUrl + `categories/${id}.json`)
       .pipe(
@@ -98,7 +98,7 @@ constructor(
       )
   }
 
-  // 更新投資組合
+  /** 更新所有投資組合 */
   updateCategories(req) {
     return this.http.put(this.baseUrl + 'categories.json', req)
       .pipe(
