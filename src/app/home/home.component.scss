@@ -1,4 +1,4 @@
-.historial-stock-detail {
+.latest-stock-detail {
   display: grid;
   grid-template-rows: repeat(5, 1fr);
   grid-template-columns: repeat(4, 1fr);
@@ -7,7 +7,7 @@
   padding: 10px;
 }
 
-.historial-stock-detail > div:nth-child(2) {
+.latest-stock-detail > div:nth-child(2) {
   grid-area: 1 / 2 / 2 / 5;
 }
 
@@ -20,8 +20,16 @@
   font-weight: bolder;
 }
 
-.fa-solid {
-  color: #2196F3
+.fa-regular {
+  color: #2196F3;
+}
+
+.fa-sort {
+  display: none;
+}
+
+th:hover > .fa-sort {
+  display: inline-block;
 }
 
 .search-button, td:hover {
@@ -36,6 +44,10 @@
 
 label {
   width: 100%;
+}
+
+th:hover {
+  cursor: pointer;
 }
 
 .loading-overlay {

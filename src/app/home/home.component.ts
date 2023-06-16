@@ -20,6 +20,7 @@ import { PortfolioReq } from '../core/interface/portfolio.interface';
 export class HomeComponent implements OnInit {
   @ViewChild('keywordForm') keywordForm: NgForm;  // 搜尋欄位
   oneMonthStockData: TaiwanStockPrice[] = [];     // 30天內股票成交資訊
+  lastDayStockPrice: TaiwanStockPrice;            // 最近一天股票成交資訊
   stocksInfo: TaiwanStockInfo[];                  // 所有個股基本資訊
   title: string;                                  // 所選股票-代號+名稱
   isHovered: boolean;                             // 懸停星號
@@ -31,6 +32,17 @@ export class HomeComponent implements OnInit {
   selectedPortfolio: Portfolio;                   // 所選股票的投資組合資訊
   selectedCategories: string[] = [];              // 所選股票的類別(編輯)
   cloneSelectedCategories: string[];              // 所選股票的類別(初始)
+  sortStatus = {
+    date: 'drop',
+    Trading_Volume: 'drop',
+    Trading_money: 'drop',
+    open: 'drop',
+    close: 'drop',
+    max: 'drop',
+    min: 'drop',
+    spread: 'drop',
+    Trading_turnover: 'drop'
+  };
 
   // 搜尋欄位是否查無個股
   get dataNotFound() { return this.stocksInfo?.every(stockInfo => stockInfo.stock_id !== this.keywordForm.form.value.keyword); }
@@ -69,6 +81,7 @@ export class HomeComponent implements OnInit {
     this.stockService.getTaiwanStockPrice(req)
       .pipe(
         concatMap(res => {
+          this.lastDayStockPrice = res.data[res.data.length - 1];
           this.oneMonthStockData = res.data.reverse();
           this.title = this.selectedStock.stock_id + ' ' + this.selectedStock.stock_name;
           return this.portfolioService.getPortfolios();
@@ -160,6 +173,33 @@ export class HomeComponent implements OnInit {
   /** 懸停/離開 */
   toggleHover(hovered: boolean) {
     this.isHovered = hovered;
+  }
+
+  /** 排序欄位 */
+  sortColumn(columnName: string) {
+    if(this.sortStatus[columnName] === 'drop') {
+      this.sortStatus[columnName] = 'rise';
+      this.oneMonthStockData.sort((a,b) => {
+        if(columnName === 'date') {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA.getTime() - dateB.getTime();
+        } else {
+          return a[columnName] - b[columnName];
+        }
+      })
+    } else {
+      this.sortStatus[columnName] = 'drop';
+      this.oneMonthStockData.sort((a,b) => {
+        if(columnName === 'date') {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB.getTime() - dateA.getTime();
+        } else {
+          return b[columnName] - a[columnName];
+        }
+      })
+    }
   }
 
   /** 勾選類別 */

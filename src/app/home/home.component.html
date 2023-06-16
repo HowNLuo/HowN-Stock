@@ -53,41 +53,41 @@
   <div class="row mt-5">
     <canvas class="col-md-6" id="chart"></canvas>
     <div class="col-md-6 align-self-center">
-      <div class="historial-stock-detail">
+      <div class="latest-stock-detail">
         <div>日期</div>
-        <div>{{oneMonthStockData[0].date}}</div>
+        <div>{{ lastDayStockPrice.date }}</div>
         <div>成交股數</div>
-        <div>{{oneMonthStockData[0].Trading_Volume | number}}</div>
+        <div>{{ lastDayStockPrice.Trading_Volume | number }}</div>
         <div>成交金額</div>
-        <div>{{oneMonthStockData[0].Trading_money | number}}</div>
+        <div>{{ lastDayStockPrice.Trading_money | number }}</div>
         <div>開盤</div>
-        <div>{{oneMonthStockData[0].open | number}}</div>
+        <div>{{ lastDayStockPrice.open | number }}</div>
         <div>收盤</div>
-        <div>{{oneMonthStockData[0].close | number}}</div>
+        <div>{{ lastDayStockPrice.close | number }}</div>
         <div>最高</div>
-        <div>{{oneMonthStockData[0].max | number}}</div>
+        <div>{{ lastDayStockPrice.max | number }}</div>
         <div>最低</div>
-        <div>{{oneMonthStockData[0].min | number}}</div>
+        <div>{{ lastDayStockPrice.min | number }}</div>
         <div>買賣價差</div>
-        <div>{{oneMonthStockData[0].spread | number}}</div>
+        <div>{{ lastDayStockPrice.spread | number }}</div>
         <div>成交筆數</div>
-        <div>{{oneMonthStockData[0].Trading_turnover | number}}</div>
+        <div>{{ lastDayStockPrice.Trading_turnover | number }}</div>
       </div>
     </div>
   </div>
 
-  <table class="table table-fixed mt-5">
-    <thead>
+  <table class="table table-fixed table-hover mt-5">
+    <thead class="thead-light">
       <tr>
-        <th>日期</th>
-        <th>成交股數</th>
-        <th>成交金額</th>
-        <th>開盤價</th>
-        <th>最高價</th>
-        <th>最低價</th>
-        <th>收盤價</th>
-        <th>買賣價差</th>
-        <th>成交筆數</th>
+        <th (click)="sortColumn('date')">日期 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('Trading_Volume')">成交股數 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('Trading_money')">成交金額 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('open')">開盤價 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('max')">最高價 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('min')">最低價 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('close')">收盤價 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('spread')">買賣價差 <i class="fa-solid fa-sort"></i></th>
+        <th (click)="sortColumn('Trading_turnover')">成交筆數 <i class="fa-solid fa-sort"></i></th>
       </tr>
     </thead>
     <tbody class="list-unstyled" *ngIf="oneMonthStockData">
