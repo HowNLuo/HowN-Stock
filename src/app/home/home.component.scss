@@ -29,6 +29,15 @@
   color: #ffffff;
 }
 
+.remove-button {
+  border: 1px solid red;
+  color: red;
+}
+
+label {
+  width: 100%;
+}
+
 .loading-overlay {
   position: fixed;
   top: 0;

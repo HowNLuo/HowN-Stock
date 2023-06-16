@@ -77,6 +77,8 @@ export class HomeComponent implements OnInit {
           if(res.length > 0) {
             this.portfolios = res;
             this.selectedPortfolio = res.find(portfolio => portfolio.stockId === this.keywordForm.form.value.keyword);
+            this.selectedCategories = res.find(portfolio => portfolio.stockId === this.selectedStock.stock_id)?.categories ?? [];
+            this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
           }
           this.isLoading = false;
         }),
@@ -97,26 +99,19 @@ export class HomeComponent implements OnInit {
           }
         )
     }
-    this.selectedCategories = this.portfolios.find(portfolio => portfolio.stockId === this.selectedStock.stock_id)?.categories ?? [];
-    this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
   }
 
   /** 提交分類結果 */
   endClassifyPortfolio() {
     if(this.selectedCategories.length === 0) {
-      this.portfolioService.deletePortFolio(this.selectedPortfolio.stockId)
-        .pipe(
-          concatMap(() => this.portfolioService.getPortfolios()),
-          tap(res => this.portfolios = res)
-        )
-        .subscribe();
+      this.removeFromPortfolios();
     } else {
       const req: PortfolioReq = {
-        stockId: this.selectedPortfolio.stockId,
-        stockName: this.selectedPortfolio.stockName,
+        stockId: this.selectedStock.stock_id,
+        stockName: this.selectedStock.stock_name,
         categories: this.selectedCategories
       };
-      this.portfolioService.updatePortFolio(this.selectedPortfolio.stockId, req)
+      this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
         .pipe(
           concatMap(() => this.portfolioService.getPortfolios()),
           tap(res => this.portfolios = res)
@@ -178,6 +173,16 @@ export class HomeComponent implements OnInit {
 
   /** 還原選取的類別 */
   revertCategory() {
-    this.selectedCategories = this.cloneSelectedCategories;
+    this.selectedCategories = _.cloneDeep(this.cloneSelectedCategories);
+  }
+
+  /** 從投資組合中移除 */
+  removeFromPortfolios() {
+    this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
+    .pipe(
+      concatMap(() => this.portfolioService.getPortfolios()),
+      tap(res => this.portfolios = res)
+    )
+    .subscribe();
   }
 }

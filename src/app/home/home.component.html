@@ -115,7 +115,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 id="dialog-sizes-name2" class="modal-title pull-left">加入投資組合</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="addPortfolio.hide()">
+        <button type="button" class="close pull-right" aria-label="Close" (click)="revertCategory();addPortfolio.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -137,6 +137,7 @@
           </li>
         </ul>
         <button type="submit" class="btn search-button" (click)="endClassifyPortfolio();addPortfolio.hide()">確認</button>
+        <button type="submit" class="btn ml-3 remove-button" (click)="removeFromPortfolios();addPortfolio.hide()">移除</button>
       </form>
     </div>
   </div>
