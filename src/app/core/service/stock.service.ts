@@ -20,7 +20,7 @@ export class StockService {
     private http: HttpClient
   ) { }
 
-  // 取得個股資訊
+  /** 取得所有個股資訊 */
   getTaiwanStockInfo() {
     return this.http.get<TaiwanStockInfoRes>(this.baseUrl + `dataset=${Dataset.TaiwanStockInfo}`)
       .pipe(
@@ -29,7 +29,7 @@ export class StockService {
       )
   }
 
-  // 取得股價日成交資訊
+  /** 取得個股日成交資訊 */
   getTaiwanStockPrice(req) {
     return this.http.get<TaiwanStockPriceRes>(this.baseUrl + `dataset=${Dataset.TaiwanStockPrice}` + `&data_id=${req.stockId}` + `&start_date=${req.startDate}`)
       .pipe(

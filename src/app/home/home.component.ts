@@ -92,6 +92,11 @@ export class HomeComponent implements OnInit {
             this.selectedPortfolio = res.find(portfolio => portfolio.stockId === this.keywordForm.form.value.keyword);
             this.selectedCategories = res.find(portfolio => portfolio.stockId === this.selectedStock.stock_id)?.categories ?? [];
             this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
+          } else {
+            this.portfolios = [];
+            this.selectedPortfolio = null;
+            this.selectedCategories = [];
+            this.cloneSelectedCategories = [];
           }
           this.isLoading = false;
         }),
@@ -119,6 +124,7 @@ export class HomeComponent implements OnInit {
     if(this.selectedCategories.length === 0) {
       this.removeFromPortfolios();
     } else {
+      this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
       const req: PortfolioReq = {
         stockId: this.selectedStock.stock_id,
         stockName: this.selectedStock.stock_name,
@@ -221,7 +227,12 @@ export class HomeComponent implements OnInit {
     this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
     .pipe(
       concatMap(() => this.portfolioService.getPortfolios()),
-      tap(res => this.portfolios = res)
+      tap(res => {
+        this.portfolios = res;
+        this.selectedPortfolio = null;
+        this.selectedCategories = [];
+        this.cloneSelectedCategories = [];
+      })
     )
     .subscribe();
   }

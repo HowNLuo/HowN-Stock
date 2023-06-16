@@ -110,7 +110,7 @@
   </div>
 </div>
 
-<div bsModal #addPortfolio="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2" (onHidden)="revertCategory()">
+<div bsModal #addPortfolio="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2" [config]="{backdrop: 'static'}">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -138,6 +138,7 @@
         </ul>
         <button type="submit" class="btn search-button" (click)="endClassifyPortfolio();addPortfolio.hide()">確認</button>
         <button type="submit" class="btn ml-3 remove-button" (click)="removeFromPortfolios();addPortfolio.hide()">移除</button>
+        <button type="button" class="btn ml-3 remove-button" (click)="test()">test</button>
       </form>
     </div>
   </div>
