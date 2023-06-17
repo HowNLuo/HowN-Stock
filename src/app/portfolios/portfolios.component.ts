@@ -9,7 +9,7 @@ import { TaiwanStockPrice, TaiwanStockPriceReq } from '../core/interface/stock.i
 import * as moment from 'moment'
 import * as _ from 'lodash';
 import { concatMap, tap } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { concat, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-portfolios',
@@ -17,19 +17,19 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./portfolios.component.scss']
 })
 export class PortfoliosComponent implements OnInit {
-  @ViewChild('f') form: NgForm;
-  categories: Category[];
-  portfolios: Portfolio[];
-  isLoading: boolean = false;
-  editingItem: string = '';
-  editingName: string = '';
-  categroiesEdited: Category[];
-  portfoliosEdited: Portfolio[];
-  isDragging: boolean = false;
-  draggedIndex: number;
-  currentCategory: Category;
-  currentPortfolios: Portfolio[] = [];
-  currentPortfoliosStockInfo: TaiwanStockPrice[] = [];
+  @ViewChild('f') form: NgForm;                         //  新增類別的表單
+  categories: Category[];                               //  所有類別
+  portfolios: Portfolio[];                              //  所有投資組合
+  isLoading: boolean = false;                           //  加載中
+  editingItem: string = '';                             //  點選兩下編輯的類別
+  editingName: string = '';                             //  點選兩下編輯的類別名稱
+  categroiesEdited: Category[];                         //  編輯中的所有類別
+  portfoliosEdited: Portfolio[];                        //  編輯中的所有投資組合
+  isDragging: boolean = false;                          //  是否正在拖曳
+  draggedIndex: number;                                 //  被拖曳的index
+  currentCategory: Category;                            //  當前類別
+  currentPortfolios: Portfolio[] = [];                  //  當前類別的所有投資組合
+  currentPortfoliosStockInfo: TaiwanStockPrice[] = [];  //  當前類別的所有投資組合的基本資訊
 
   constructor(
     private portfolioService: PortfolioService,
@@ -39,46 +39,42 @@ export class PortfoliosComponent implements OnInit {
   ngOnInit() {
     this.isLoading = true;
     this.portfolioService.getPortfolios()
-      .subscribe(res => {
-        this.portfolios = res;
-        this.portfolioService.getCategories()
-          .pipe(
-            tap(res => {
-              // 如果沒有類別，預設「我的」類別
-              if(res.length === 0){
-                const req: CategoryReq = {categoryName: '我的'};
-                this.portfolioService.addCategory(req)
-                  .pipe(
-                    concatMap(() => this.portfolioService.getCategories())
-                  )
-                  .subscribe(res => {
-                    this.categories = res;
-                    this.currentCategory = res[0];
-                    this.changeTab(res[0].id);
-                    this.isLoading = false;
-                  });
-              } else {
+      .pipe(
+        tap(res => this.portfolios = res),
+        concatMap(() => this.portfolioService.getCategories()),
+        tap(res => {
+          // 如果沒有類別，預設「我的」類別
+          if(res.length === 0){
+            const req: CategoryReq = {categoryName: '我的'};
+            this.portfolioService.addCategory(req)
+              .pipe(
+                concatMap(() => this.portfolioService.getCategories())
+              )
+              .subscribe(res => {
                 this.categories = res;
                 this.currentCategory = res[0];
                 this.changeTab(res[0].id);
-                this.isLoading = false;
-              }
-            })
-          )
-          .subscribe();
-      });
+              });
+          } else {
+            this.categories = res;
+            this.currentCategory = res[0];
+            this.changeTab(res[0].id);
+          }
+        })
+      )
+      .subscribe();
   }
 
+  /** 切換Tab */
   changeTab(id: string) {
+    this.isLoading = true;
     this.currentCategory = this.categories.find(category => category.id === id);
-    if(this.portfolios) {
-
-    }
     this.currentPortfolios = this.portfolios.filter(portfolio => portfolio.categories.includes(this.currentCategory.id));
 
     this.getCurrentPortfoliosStockInfo();
   }
 
+  /** 取得當前類別的所有投資組合的日成交資訊 */
   getCurrentPortfoliosStockInfo() {
     this.currentPortfoliosStockInfo = [];
 
@@ -93,13 +89,16 @@ export class PortfoliosComponent implements OnInit {
       return this.stockService.getTaiwanStockPrice(req);
     });
 
+    // 一次取得所有股票的日成交資訊
     forkJoin(observables).subscribe(res => {
       res.forEach(r => {
         this.currentPortfoliosStockInfo.push(r.data[r.data.length - 1]);
       });
     });
+    this.isLoading = false;
   }
 
+  /** 提交新增類別表單 */
   onAddCategorySubmit(categoryName: string) {
     const req: CategoryReq = {categoryName: categoryName};
     this.portfolioService.addCategory(req)
@@ -111,13 +110,15 @@ export class PortfoliosComponent implements OnInit {
     this.form.reset();
   }
 
+  /** 開始編輯類別，事先備份編輯前資料 */
   startEditCategories() {
     this.categroiesEdited = _.cloneDeep(this.categories);
     this.portfoliosEdited = _.cloneDeep(this.portfolios);
   }
 
+  /** 結束編輯類別 */
   endEditCategories() {
-    if(this.categories !== this.categroiesEdited) {
+    if(!_.isEqual(this.categories, this.categroiesEdited)) {
       this.isLoading = true;
       this.categories = this.categroiesEdited;
       const transformedData = {}
@@ -126,39 +127,43 @@ export class PortfoliosComponent implements OnInit {
           categoryName: category.categoryName
         };
       })
-
       this.portfolioService.updateCategories(transformedData)
-        .pipe(
-          concatMap(() => this.portfolioService.updatePortFolios(this.portfoliosEdited))
-        )
         .subscribe(() => {
-          this.portfolios = this.portfoliosEdited;
-          if(this.currentCategory.id) {
-            this.changeTab(this.currentCategory.id);
-          } else {
+          // 如果刪除的類別為當下類別，則需切換tab為第一個類別
+          if(!this.categories.some(category => category.id === this.currentCategory.id)) {
             this.currentCategory = this.categories[0];
             this.changeTab(this.categories[0].id);
+          } else {
+            this.changeTab(this.currentCategory.id);
           }
-          this.isLoading = false;
         });
+
+      if(!_.isEqual(this.portfolios, this.portfoliosEdited)) {
+        this.portfolios = this.portfoliosEdited;
+        this.portfolioService.updatePortFolios(this.portfoliosEdited)
+          .subscribe();
+      }
     }
   }
 
+  /** 開始編輯類別名稱 */
   startEditCategoryName(category: Category) {
     this.editingItem = this.editingName = category.categoryName;
   }
 
+  /** 結束編輯類別名稱 */
   endEditCategoryName(index: number) {
     this.editingItem = '';
     this.categroiesEdited[index].categoryName = this.editingName;
   }
 
+  /** 刪除指定類別 */
   deleteCategory(categoryId: string, index: number) {
     this.categroiesEdited.splice(index, 1);
-    this.portfoliosEdited.forEach(portfolio => {
-      portfolio.categories = portfolio.categories.filter(category => category !== categoryId);
-    });
-    this.portfoliosEdited.filter(portfolio => portfolio.categories.length === 0);
+
+    // 刪除類別，包含該類別的投資組合也要移除該類別，如果投資組合的類別皆被刪除，則移除該投資組合
+    this.portfoliosEdited.forEach(portfolio => portfolio.categories = portfolio.categories.filter(category => category !== categoryId));
+    this.portfoliosEdited.filter(portfolio => portfolio.categories.length !== 0);
   }
 
   onDragStart(index: number) {
