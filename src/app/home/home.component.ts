@@ -50,6 +50,9 @@ export class HomeComponent implements OnInit {
   // 所選股票是否加入至投資組合
   get isInPortfolios() { return this.portfolios ? this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id) : false; }
 
+  // 是否異動過categories
+  get categoriesModified() { return !_.isEqual(this.selectedCategories, this.cloneSelectedCategories); }
+
   constructor(
     private stockService: StockService,
     private portfolioService: PortfolioService
@@ -121,21 +124,23 @@ export class HomeComponent implements OnInit {
 
   /** 提交分類結果 */
   endClassifyPortfolio() {
-    if(this.selectedCategories.length === 0) {
-      this.removeFromPortfolios();
-    } else {
-      this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
-      const req: PortfolioReq = {
-        stockId: this.selectedStock.stock_id,
-        stockName: this.selectedStock.stock_name,
-        categories: this.selectedCategories
-      };
-      this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
-        .pipe(
-          concatMap(() => this.portfolioService.getPortfolios()),
-          tap(res => this.portfolios = res)
-        )
-        .subscribe();
+    if(this.categoriesModified) {
+      if(this.selectedCategories.length === 0) {
+        this.removeFromPortfolios();
+      } else {
+        this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
+        const req: PortfolioReq = {
+          stockId: this.selectedStock.stock_id,
+          stockName: this.selectedStock.stock_name,
+          categories: this.selectedCategories
+        };
+        this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
+          .pipe(
+            concatMap(() => this.portfolioService.getPortfolios()),
+            tap(res => this.portfolios = res)
+          )
+          .subscribe();
+      }
     }
   }
 
@@ -214,7 +219,7 @@ export class HomeComponent implements OnInit {
       this.selectedCategories.push(categoryId);
     } else {
       this.selectedCategories = this.selectedCategories.filter(category => category !== categoryId);
-    }
+    };
   }
 
   /** 還原選取的類別 */

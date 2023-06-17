@@ -108,17 +108,19 @@
               (dragover)="onDragOver($event, i)"
               (dragend)="onDragEnd()"
             >
-              <i class="fa-solid fa-bars"></i>
+            <div class="d-flex align-items-center">
+              <i class="fa-solid fa-bars mr-3"></i>
               <span *ngIf="editingItem !== category.categoryName">{{ category.categoryName }}</span>
               <input
                 type="text"
-                class="form-control ml-3 mr-3"
+                class="form-control"
                 *ngIf="editingItem === category.categoryName"
                 [value]="category.categoryName"
                 (blur)="endEditCategoryName(i)"
                 [(ngModel)]="editingName"
               >
-              <i class="fa-solid fa-trash" type="button" (click)="deleteCategory(category.id, i)" ></i>
+            </div>
+            <i class="fa-solid fa-trash float-right ml-3" type="button" *ngIf="categroiesEdited.length > 1" (click)="deleteCategory(category.id, i)" ></i>
             </li>
           </ng-container>
         </ul>

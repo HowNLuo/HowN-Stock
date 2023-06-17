@@ -166,11 +166,13 @@ export class PortfoliosComponent implements OnInit {
     this.portfoliosEdited.filter(portfolio => portfolio.categories.length !== 0);
   }
 
+  /** 開始拖曳 */
   onDragStart(index: number) {
     this.isDragging = true;
     this.draggedIndex = index;
   }
 
+  /** 拖曳中 */
   onDragOver(event: DragEvent, index: number) {
     event.preventDefault();
     if (this.draggedIndex !== index) {
@@ -179,6 +181,7 @@ export class PortfoliosComponent implements OnInit {
     };
   }
 
+  /** 結束拖曳 */
   onDragEnd() {
     this.isDragging = false;
     this.draggedIndex = null;
