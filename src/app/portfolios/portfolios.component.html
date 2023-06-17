@@ -2,7 +2,6 @@
   <div class="col-md-12 d-flex mt-5 category-panel">
     <button class="btn mr-3" (click)="addCategory.show()">新增類別</button>
     <button class="btn" (click)="editCategories.show(); startEditCategories()">編輯類別</button>
-    <button class="btn ml-3" (click)="test()">test</button>
   </div>
   <div class="col-md-12 mt-5">
     <nav>
@@ -25,36 +24,26 @@
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
-      <table class="table table-fixed">
-        <thead>
-          <tr>
-            <th>代號</th>
-            <th>日期</th>
-            <th>成交股數</th>
-            <th>成交金額</th>
-            <th>開盤價</th>
-            <th>最高價</th>
-            <th>最低價</th>
-            <th>收盤價</th>
-            <th>買賣價差</th>
-            <th>成交筆數</th>
-          </tr>
-        </thead>
-        <tbody class="list-unstyled">
-          <tr *ngFor="let portfolioStockInfo of currentPortfoliosStockInfo">
-            <td>{{ portfolioStockInfo.stock_id }}</td>
-            <td>{{ portfolioStockInfo.date }}</td>
-            <td>{{ portfolioStockInfo.Trading_Volume  | number }}</td>
-            <td>{{ portfolioStockInfo.Trading_money  | number }}</td>
-            <td>{{ portfolioStockInfo.open  | number }}</td>
-            <td>{{ portfolioStockInfo.max  | number }}</td>
-            <td>{{ portfolioStockInfo.min  | number }}</td>
-            <td>{{ portfolioStockInfo.close  | number }}</td>
-            <td>{{ portfolioStockInfo.spread  | number }}</td>
-            <td>{{ portfolioStockInfo.Trading_turnover  | number }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="cards d-flex flex-wrap mt-5">
+        <div class="card mr-3 mb-3" style="width: 15rem;" *ngFor="let portfolioStockInfo of currentPortfoliosStockInfo">
+          <div class="card-body">
+            <h3 class="card-title">{{ portfolioStockInfo.stockId }}</h3>
+            <h4 class="card-subtitle mb-3 text-muted">{{ portfolioStockInfo.stockName }}</h4>
+            <div class="card-info d-flex">
+              <div class="mr-5 mb-3">昨收<br><span class="font-weight-bold">{{ portfolioStockInfo.close }}</span></div>
+              <div>漲跌幅<br>
+                <span class="font-weight-bold" [ngStyle]="{'color': portfolioStockInfo.changeRate > 0 ? 'red' : '#5fc31c'}">
+                  {{ portfolioStockInfo.changeRate }} %
+                </span>
+              </div>
+            </div>
+            <div class="card-buttom d-flex align-items-center justify-content-between">
+              <a routerLink="#" class="card-link">查看詳細資料</a>
+              <i class="fa-solid fa-trash" type="button"></i>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -125,7 +114,6 @@
           </ng-container>
         </ul>
         <button type="button" class="btn mt-3" (click)="editCategories.hide(); endEditCategories()">確認</button>
-        <button type="button" class="btn ml-3"(click)="test()">test</button>
       </div>
     </div>
   </div>

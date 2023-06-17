@@ -1,12 +1,26 @@
 .category-panel button, .modal-body button {
-  color: #2196F3;
-  border: 2px solid #2196F3;
+  color: #c664ff;
+  border: 2px solid #c664ff;
   font-weight: bold;
 }
 
-.nav-link.active {
-  background-color: #2196F3;
-  color: #ffffff;
+.nav-link {
+  min-width: 66px;
+  margin-right: 1px;
+  background-color: #eed1ff;
+
+  &.active {
+    background-color: #c664ff;
+    color: #ffffff;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #eed1ff;
+}
+
+.card {
+  border: 3px solid #c664ff;
 }
 
 .loading-overlay {

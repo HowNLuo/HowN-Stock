@@ -166,7 +166,7 @@ export class HomeComponent implements OnInit {
           label: `30日股價歷史紀錄`,
           data: yArray.reverse(),
           fill: false,
-          borderColor: '#2196F3',
+          borderColor: '#c664ff',
           tension: 0.1
         }]
       };
