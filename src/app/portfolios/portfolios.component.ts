@@ -3,13 +3,13 @@ import { NgForm } from '@angular/forms';
 
 import { PortfolioService } from './../core/service/portfolio.service';
 import { StockService } from './../core/service/stock.service';
-import { Category, Portfolio, CategoryReq } from './../core/interface/portfolio.interface';
+import { Category, Portfolio, CategoryReq, PortfolioReq } from './../core/interface/portfolio.interface';
 import { TaiwanStockInfo, TaiwanStockPrice, TaiwanStockPriceReq } from '../core/interface/stock.interface';
 
 import * as moment from 'moment'
 import * as _ from 'lodash';
 import { concatMap, tap } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-portfolios',
@@ -111,6 +111,25 @@ export class PortfoliosComponent implements OnInit {
     } else {
       this.isLoading = false;
     }
+  }
+
+  deletePortfolio(portfolioId: string) {
+    this.isLoading = true;
+    this.portfolios = this.portfolios.map(portfolio => {
+      const updatedCategories = portfolio.categories.filter(category => category !== this.currentCategory.id)
+      return {...portfolio, categories: updatedCategories}
+    })
+    const req = this.portfolios.find(portfolio => portfolio.stockId === portfolioId);
+    this.portfolioService.updatePortFolio(portfolioId, req)
+      .pipe(
+        concatMap(() => this.portfolioService.getPortfolios()),
+        tap(res => {
+          this.portfolios = res;
+          this.currentPortfoliosStockInfo = this.currentPortfoliosStockInfo.filter(portfolio => portfolio.stockId !== portfolioId);
+          this.isLoading = false;
+        })
+      )
+      .subscribe();
   }
 
   /** 提交新增類別表單 */

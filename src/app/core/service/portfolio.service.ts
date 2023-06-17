@@ -35,7 +35,7 @@ constructor(
       )
   }
 
-  /** 新增投資組合 */
+  /** 更新投資組合 */
   updatePortFolio(id: string, req: PortfolioReq) {
     return this.http.put<{name: string}>(this.baseUrl + `portfolios/${id}.json`, req)
       .pipe(
