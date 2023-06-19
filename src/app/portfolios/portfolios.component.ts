@@ -1,3 +1,4 @@
+import { LoadingService } from './../core/service/loading.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -32,14 +33,16 @@ export class PortfoliosComponent implements OnInit {
   currentPortfoliosStockInfo = [];      //  當前類別的所有投資組合的日成交資訊
 
   // 加載中
-  get isLoading(): boolean { return this.portfolioService.isLoading || this.stockService.isLoading; }
+  get isLoading(): boolean { return this.loadingService.isLoading; }
 
   constructor(
     private portfolioService: PortfolioService,
-    private stockService: StockService
+    private stockService: StockService,
+    private loadingService: LoadingService
   ) { }
 
   ngOnInit() {
+    this.loadingService.show();
     this.portfolioService.getPortfolios()
       .pipe(
         tap(res => this.portfolios = res),
@@ -71,6 +74,7 @@ export class PortfoliosComponent implements OnInit {
 
   /** 切換Tab */
   changeTab(id: string) {
+    this.loadingService.show();
     this.currentCategory = this.categories.find(category => category.id === id);
     this.currentPortfolios = this.portfolios.filter(portfolio => portfolio.categories.includes(this.currentCategory.id));
 
@@ -107,11 +111,15 @@ export class PortfoliosComponent implements OnInit {
             };
             this.currentPortfoliosStockInfo.push(stockInfo);
           });
+          this.loadingService.hide();
         });
+    } else {
+      this.loadingService.hide();
     }
   }
 
   deletePortfolio(portfolioId: string) {
+    this.loadingService.show();
     this.portfolios = this.portfolios.map(portfolio => {
       const updatedCategories = portfolio.categories.filter(category => category !== this.currentCategory.id);
       return {...portfolio, categories: updatedCategories};
@@ -123,6 +131,7 @@ export class PortfoliosComponent implements OnInit {
         tap(res => {
           this.portfolios = res;
           this.currentPortfoliosStockInfo = this.currentPortfoliosStockInfo.filter(portfolio => portfolio.stockId !== portfolioId);
+          this.loadingService.hide();
         })
       )
       .subscribe();
@@ -149,6 +158,7 @@ export class PortfoliosComponent implements OnInit {
   /** 結束編輯類別 */
   endEditCategories() {
     if(!_.isEqual(this.categories, this.categroiesEdited)) {
+      this.loadingService.show();
       this.categories = this.categroiesEdited;
       const transformedData = {}
       this.categroiesEdited.map(category => {

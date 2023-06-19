@@ -1,3 +1,5 @@
+import { LoadingService } from './../core/service/loading.service';
+import { ApiService } from './../core/service/api.service';
 import { Category, Portfolio } from './../core/interface/portfolio.interface';
 import { PortfolioService } from './../core/service/portfolio.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -53,11 +55,13 @@ export class HomeComponent implements OnInit {
   get categoriesModified() { return !_.isEqual(this.selectedCategories, this.cloneSelectedCategories); }
 
   // 加載中
-  get isLoading(): boolean { return this.portfolioService.isLoading || this.stockService.isLoading; }
+  get isLoading(): boolean { return this.loadingService.isLoading }
 
   constructor(
     private stockService: StockService,
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
+    private apiService: ApiService,
+    private loadingService: LoadingService
   ) { }
 
   ngOnInit() {
@@ -66,12 +70,17 @@ export class HomeComponent implements OnInit {
 
   /** 設定台股代號選項 */
   setDatalistOptions() {
+    this.loadingService.show();
     this.stockService.getTaiwanStockInfo()
-      .subscribe(res => this.stocksInfo = res.data);
+      .subscribe(res => {
+        this.stocksInfo = res.data;
+        this.loadingService.hide();
+      });
   }
 
   /** 提交表單，查詢股票30天的交易資訊 */
   onSearchClick() {
+    this.loadingService.show();
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
     const req: TaiwanStockPriceReq = {
       startDate: startDate,
@@ -98,6 +107,7 @@ export class HomeComponent implements OnInit {
             this.selectedCategories = [];
             this.cloneSelectedCategories = [];
           }
+          this.loadingService.hide();
         }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
@@ -108,8 +118,12 @@ export class HomeComponent implements OnInit {
   /** 開始分類投資組合至各類別 */
   startClassifyPortfolio() {
     if(!this.categories) {
+      this.loadingService.show();
       this.portfolioService.getCategories()
-        .subscribe(res => this.categories = res)
+        .subscribe(res => {
+          this.categories = res;
+          this.loadingService.hide();
+        })
     }
   }
 
