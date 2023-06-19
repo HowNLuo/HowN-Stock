@@ -1,0 +1,10 @@
+<div class="modal-header">
+  <h4 class="modal-title">錯誤訊息</h4>
+  <button type="button" class="close" (click)="modalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>呼叫{{ error.url }}失敗</p>
+  <p>原因：{{ error.statusText }}</p>
+</div>

@@ -25,7 +25,6 @@ export class HomeComponent implements OnInit {
   title: string;                                  // 所選股票-代號+名稱
   isHovered: boolean;                             // 懸停星號
   chart: Chart;                                   // 折線圖
-  isLoading: boolean = false;                     // 判斷是否加載中
   portfolios: Portfolio[] = [];                   // 所有投資組合
   categories: Category[];                         // 所有類別
   selectedStock: TaiwanStockInfo;                 // 所選股票的基本資訊
@@ -53,6 +52,9 @@ export class HomeComponent implements OnInit {
   // 是否異動過categories
   get categoriesModified() { return !_.isEqual(this.selectedCategories, this.cloneSelectedCategories); }
 
+  // 加載中
+  get isLoading(): boolean { return this.portfolioService.isLoading || this.stockService.isLoading; }
+
   constructor(
     private stockService: StockService,
     private portfolioService: PortfolioService
@@ -64,17 +66,12 @@ export class HomeComponent implements OnInit {
 
   /** 設定台股代號選項 */
   setDatalistOptions() {
-    this.isLoading = true;
     this.stockService.getTaiwanStockInfo()
-      .subscribe(res => {
-        this.stocksInfo = res.data;
-        this.isLoading = false;
-      });
+      .subscribe(res => this.stocksInfo = res.data);
   }
 
   /** 提交表單，查詢股票30天的交易資訊 */
   onSearchClick() {
-    this.isLoading = true;
     const startDate = moment((new Date()).setMonth(new Date().getMonth() - 1)).format('YYYY-MM-DD')
     const req: TaiwanStockPriceReq = {
       startDate: startDate,
@@ -101,7 +98,6 @@ export class HomeComponent implements OnInit {
             this.selectedCategories = [];
             this.cloneSelectedCategories = [];
           }
-          this.isLoading = false;
         }),
         delay(0)  // 等HTML中的chart被生成
       ).subscribe(() => {
@@ -112,13 +108,8 @@ export class HomeComponent implements OnInit {
   /** 開始分類投資組合至各類別 */
   startClassifyPortfolio() {
     if(!this.categories) {
-      this.isLoading = true;
       this.portfolioService.getCategories()
-        .subscribe(res => {
-            this.categories = res;
-            this.isLoading = false;
-          }
-        )
+        .subscribe(res => this.categories = res)
     }
   }
 
