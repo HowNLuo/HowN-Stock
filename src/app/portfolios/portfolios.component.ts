@@ -118,14 +118,19 @@ export class PortfoliosComponent implements OnInit {
     }
   }
 
+  /** 移除指定投資組合 */
   deletePortfolio(portfolioId: string) {
     this.loadingService.show();
     this.portfolios = this.portfolios.map(portfolio => {
-      const updatedCategories = portfolio.categories.filter(category => category !== this.currentCategory.id);
-      return {...portfolio, categories: updatedCategories};
+      if(portfolio.stockId === portfolioId){
+        const updatedCategories = portfolio.categories.filter(category => category !== this.currentCategory.id);
+        return {...portfolio, categories: updatedCategories};
+      } else {
+        return portfolio;
+      }
     });
     const req = this.portfolios.find(portfolio => portfolio.stockId === portfolioId);
-    this.portfolioService.updatePortFolio(portfolioId, req)
+    this.portfolioService.updatePortfolio(portfolioId, req)
       .pipe(
         concatMap(() => this.portfolioService.getPortfolios()),
         tap(res => {
@@ -194,7 +199,7 @@ export class PortfoliosComponent implements OnInit {
         result[item.stockId] = item;
         return result;
       }, {});
-      this.portfolioService.updatePortFolios(transformedData)
+      this.portfolioService.updatePortfolios(transformedData)
         .subscribe();
   }
 
@@ -235,6 +240,7 @@ export class PortfoliosComponent implements OnInit {
       const draggedItem = this.categroiesEdited[this.draggedIndex];  // 交換的類別
       const dragOverItem = this.categroiesEdited[index];             // 被交換的類別
       const cloneDraggedItem = _.cloneDeep(draggedItem);
+      // 交換類別，投資組合也要交換
       this.portfoliosEdited.forEach(portfolio => {
         if(portfolio.categories.includes(draggedItem.id) && portfolio.categories.includes(dragOverItem.id)) {
           return;
@@ -246,6 +252,8 @@ export class PortfoliosComponent implements OnInit {
           portfolio.categories.push(draggedItem.id);
         }
       })
+
+      // 類別互換ID
       draggedItem.id = dragOverItem.id;
       dragOverItem.id = cloneDraggedItem.id;
       this.categroiesEdited.splice(this.draggedIndex, 1);

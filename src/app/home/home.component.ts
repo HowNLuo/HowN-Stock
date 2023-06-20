@@ -139,7 +139,7 @@ export class HomeComponent implements OnInit {
           stockName: this.selectedStock.stock_name,
           categories: this.selectedCategories
         };
-        this.portfolioService.updatePortFolio(this.selectedStock.stock_id, req)
+        this.portfolioService.updatePortfolio(this.selectedStock.stock_id, req)
           .pipe(
             concatMap(() => this.portfolioService.getPortfolios()),
             tap(res => this.portfolios = res)
@@ -234,7 +234,7 @@ export class HomeComponent implements OnInit {
 
   /** 從投資組合中移除 */
   removeFromPortfolios() {
-    this.portfolioService.deletePortFolio(this.selectedStock.stock_id)
+    this.portfolioService.deletePortfolio(this.selectedStock.stock_id)
     .pipe(
       concatMap(() => this.portfolioService.getPortfolios()),
       tap(res => {
