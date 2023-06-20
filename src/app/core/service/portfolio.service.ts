@@ -39,7 +39,7 @@ export class PortfolioService {
   }
 
   /** 更新所有投資組合 */
-  updatePortFolios(req: Portfolio[]) {
+  updatePortFolios(req) {
     return this.apiService.updateApi(this.baseUrl + `portfolios.json`, req, 'updatePortFolios');
   }
 

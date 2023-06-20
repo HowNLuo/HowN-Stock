@@ -159,30 +159,43 @@ export class PortfoliosComponent implements OnInit {
   endEditCategories() {
     if(!_.isEqual(this.categories, this.categroiesEdited)) {
       this.loadingService.show();
-      this.categories = this.categroiesEdited;
-      const transformedData = {}
-      this.categroiesEdited.map(category => {
-        transformedData[category.id] = {
-          categoryName: category.categoryName
-        };
-      })
-      this.portfolioService.updateCategories(transformedData)
-        .subscribe(() => {
-          // 如果刪除的類別為當下類別，則需切換tab為第一個類別
-          if(!this.categories.some(category => category.id === this.currentCategory.id)) {
-            this.currentCategory = this.categories[0];
-            this.changeTab(this.categories[0].id);
-          } else {
-            this.changeTab(this.currentCategory.id);
-          }
-        });
-
+      this.handleCategoriesModify();
       if(!_.isEqual(this.portfolios, this.portfoliosEdited)) {
-        this.portfolios = this.portfoliosEdited;
-        this.portfolioService.updatePortFolios(this.portfoliosEdited)
-          .subscribe();
+        this.handlePortfoliosModify();
       }
     }
+  }
+
+  /** 異動類別處理 */
+  handleCategoriesModify() {
+    this.categories = _.cloneDeep(this.categroiesEdited);
+    const transformedData = {}
+    this.categroiesEdited.map(category => {
+      transformedData[category.id] = {
+        categoryName: category.categoryName
+      };
+    })
+    this.portfolioService.updateCategories(transformedData)
+      .subscribe(() => {
+        // 如果刪除的類別為當下類別，則需切換tab為第一個類別
+        if(!this.categories.some(category => category.id === this.currentCategory.id)) {
+          this.currentCategory = this.categories[0];
+          this.changeTab(this.categories[0].id);
+        } else {
+          this.changeTab(this.currentCategory.id);
+        }
+      });
+  }
+
+  /** 異動投資組合處理 */
+  handlePortfoliosModify() {
+    this.portfolios = _.cloneDeep(this.portfoliosEdited);
+      const transformedData = this.portfoliosEdited.reduce((result, item) => {
+        result[item.stockId] = item;
+        return result;
+      }, {});
+      this.portfolioService.updatePortFolios(transformedData)
+        .subscribe();
   }
 
   /** 開始編輯類別名稱 */
@@ -193,7 +206,11 @@ export class PortfoliosComponent implements OnInit {
   /** 結束編輯類別名稱 */
   endEditCategoryName(index: number) {
     this.editingItem = '';
-    this.categroiesEdited[index].categoryName = this.editingName;
+    if(this.categroiesEdited.map(category => category.categoryName).includes(this.editingName)) {
+      alert('重複命名');
+    } else {
+      this.categroiesEdited[index].categoryName = this.editingName;
+    }
   }
 
   /** 刪除指定類別 */
@@ -215,7 +232,24 @@ export class PortfoliosComponent implements OnInit {
   onDragOver(event: DragEvent, index: number) {
     event.preventDefault();
     if (this.draggedIndex !== index) {
-      [this.categroiesEdited[this.draggedIndex], this.categroiesEdited[index]] = [this.categroiesEdited[index], this.categroiesEdited[this.draggedIndex]];
+      const draggedItem = this.categroiesEdited[this.draggedIndex];  // 交換的類別
+      const dragOverItem = this.categroiesEdited[index];             // 被交換的類別
+      const cloneDraggedItem = _.cloneDeep(draggedItem);
+      this.portfoliosEdited.forEach(portfolio => {
+        if(portfolio.categories.includes(draggedItem.id) && portfolio.categories.includes(dragOverItem.id)) {
+          return;
+        } else if(portfolio.categories.includes(draggedItem.id)) {
+          portfolio.categories = portfolio.categories.filter(category => category !== draggedItem.id);
+          portfolio.categories.push(dragOverItem.id);
+        }else if(portfolio.categories.includes(dragOverItem.id)) {
+          portfolio.categories = portfolio.categories.filter(category => category !== dragOverItem.id);
+          portfolio.categories.push(draggedItem.id);
+        }
+      })
+      draggedItem.id = dragOverItem.id;
+      dragOverItem.id = cloneDraggedItem.id;
+      this.categroiesEdited.splice(this.draggedIndex, 1);
+      this.categroiesEdited.splice(index, 0, draggedItem);
       this.draggedIndex = index;
     };
   }
