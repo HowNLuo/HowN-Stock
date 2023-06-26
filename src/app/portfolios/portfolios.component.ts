@@ -1,3 +1,4 @@
+import { CategoryService } from './../core/service/category.service';
 import { LoadingService } from './../core/service/loading.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
@@ -32,11 +33,9 @@ export class PortfoliosComponent implements OnInit {
   currentPortfolios: Portfolio[] = [];  //  當前類別的所有投資組合
   currentPortfoliosStockInfo = [];      //  當前類別的所有投資組合的日成交資訊
 
-  // 加載中
-  get isLoading(): boolean { return this.loadingService.isLoading; }
-
   constructor(
     private portfolioService: PortfolioService,
+    private categoryService: CategoryService,
     private stockService: StockService,
     private loadingService: LoadingService
   ) { }
@@ -48,14 +47,14 @@ export class PortfoliosComponent implements OnInit {
         tap(res => this.portfolios = res),
         concatMap(() => this.stockService.getTaiwanStockInfo()),
         tap(res => this.stocksInfo = res.data),
-        concatMap(() => this.portfolioService.getCategories()),
+        concatMap(() => this.categoryService.getCategories()),
         tap(res => {
           // 如果沒有類別，預設「我的」類別
           if(res.length === 0){
             const req: CategoryReq = {categoryName: '我的'};
-            this.portfolioService.addCategory(req)
+            this.categoryService.addCategory(req)
               .pipe(
-                concatMap(() => this.portfolioService.getCategories())
+                concatMap(() => this.categoryService.getCategories())
               )
               .subscribe(res => {
                 this.categories = res;
@@ -145,9 +144,9 @@ export class PortfoliosComponent implements OnInit {
   /** 提交新增類別表單 */
   onAddCategorySubmit(categoryName: string) {
     const req: CategoryReq = {categoryName: categoryName};
-    this.portfolioService.addCategory(req)
+    this.categoryService.addCategory(req)
       .pipe(
-        concatMap(() => this.portfolioService.getCategories()),
+        concatMap(() => this.categoryService.getCategories()),
         tap(res => this.categories = res)
       )
       .subscribe();
@@ -180,7 +179,7 @@ export class PortfoliosComponent implements OnInit {
         categoryName: category.categoryName
       };
     })
-    this.portfolioService.updateCategories(transformedData)
+    this.categoryService.updateCategories(transformedData)
       .subscribe(() => {
         // 如果刪除的類別為當下類別，則需切換tab為第一個類別
         if(!this.categories.some(category => category.id === this.currentCategory.id)) {

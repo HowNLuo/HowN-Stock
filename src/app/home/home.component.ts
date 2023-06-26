@@ -1,18 +1,20 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+
+import { CategoryService } from './../core/service/category.service';
 import { LoadingService } from './../core/service/loading.service';
 import { ApiService } from './../core/service/api.service';
 import { Category, Portfolio } from './../core/interface/portfolio.interface';
 import { PortfolioService } from './../core/service/portfolio.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-
 import { StockService } from './../core/service/stock.service';
 import { TaiwanStockInfo, TaiwanStockPrice, TaiwanStockPriceReq } from './../core/interface/stock.interface';
+import { PortfolioReq } from '../core/interface/portfolio.interface';
+
+import { delay, tap, concatMap } from 'rxjs/operators';
 
 import * as Chart from 'chart.js';
 import * as moment from 'moment';
 import * as _ from 'lodash'
-import { delay, tap, concatMap } from 'rxjs/operators';
-import { PortfolioReq } from '../core/interface/portfolio.interface';
 
 @Component({
   selector: 'app-home',
@@ -54,14 +56,12 @@ export class HomeComponent implements OnInit {
   // 是否異動過categories
   get categoriesModified() { return !_.isEqual(this.selectedCategories, this.cloneSelectedCategories); }
 
-  // 加載中
-  get isLoading(): boolean { return this.loadingService.isLoading }
-
   constructor(
     private stockService: StockService,
     private portfolioService: PortfolioService,
     private apiService: ApiService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private categoryService: CategoryService
   ) { }
 
   ngOnInit() {
@@ -119,7 +119,7 @@ export class HomeComponent implements OnInit {
   startClassifyPortfolio() {
     if(!this.categories) {
       this.loadingService.show();
-      this.portfolioService.getCategories()
+      this.categoryService.getCategories()
         .subscribe(res => {
           this.categories = res;
           this.loadingService.hide();

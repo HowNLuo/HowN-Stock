@@ -1,0 +1,98 @@
+<div class="row mt-5">
+  <canvas class="col-md-6" id="chart"></canvas>
+  <div class="col-md-6 d-flex flex-column justify-content-center">
+      <h1>總金額：${{ shareHoldingDetail.length === 0 ? 0 : totalAcount | number }}</h1>
+      <button class="btn mt-5 add-btn" (click)="startAddShareholding();addShareholding.show()">新增持股明細</button>
+      <button class="btn mt-5 add-btn" (click)="test()">test</button>
+  </div>
+</div>
+
+<h1 *ngIf="shareHoldingDetail.length === 0 && !isLoading">無持股明細，請新增。</h1>
+
+<table class="table table-fixed table-hover mt-5" *ngIf="shareHoldingDetail.length > 0">
+  <thead>
+    <tr>
+      <th>股票代號</th>
+      <th>總成本</th>
+    </tr>
+  </thead>
+  <tbody class="list-unstyled">
+    <tr *ngFor="let detail of shareholdingSum">
+      <td>{{ detail.stockId }}</td>
+      <td>{{ detail.cost | number }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="table table-fixed table-hover mt-5" *ngIf="shareHoldingDetail.length > 0">
+  <thead>
+    <tr>
+      <th>股票代號</th>
+      <th>股數</th>
+      <th>股價</th>
+      <th>總成本</th>
+      <th>交易日期</th>
+    </tr>
+  </thead>
+  <tbody class="list-unstyled">
+    <tr *ngFor="let detail of shareHoldingDetail">
+      <td>{{ detail.stockId }}</td>
+      <td>{{ detail.stockUnits | number }}</td>
+      <td>{{ detail.dealPrice | number }}</td>
+      <td>{{ detail.stockUnits * detail.dealPrice | number }}</td>
+      <td>{{ detail.date }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<div bsModal #addShareholding="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name2" class="modal-title pull-left">新增持股明細</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="addShareholding.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onAddShareholdingSubmit(form.value)">
+          <div class="input-group mb-3 col-md-9">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">股票代號</span>
+            </div>
+            <input type="text" class="form-control" placeholder="請選擇股票代號" list="stockId" autocomplete="off" formControlName="stockId" maxlength="6">
+            <datalist id="stockId">
+              <option *ngFor="let stockInfo of stocksInfo" value="{{stockInfo.stock_id}}">{{ stockInfo.stock_id }} {{ stockInfo.stock_name }}</option>
+            </datalist>
+          </div>
+          <div class="input-group mb-3 col-md-9">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">交易日期</span>
+            </div>
+            <input type="date" class="form-control" placeholder="請選擇交易日期" formControlName="date">
+          </div>
+          <div class="input-group mb-3 col-md-9">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">股數</span>
+            </div>
+            <input type="number" class="form-control" placeholder="請輸入股數" formControlName="stockUnits" maxlength="8">
+          </div>
+          <div class="input-group mb-3 col-md-9">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">股價</span>
+            </div>
+            <input type="number" class="form-control" placeholder="請輸入股價" formControlName="dealPrice" maxlength="5">
+          </div>
+          <button type="submit" class="btn submit-btn" (click)="addShareholding.hide()" [disabled]="form.invalid">確認</button>
+          <button type="button" class="btn submit-btn" (click)="test()">test</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-border text-light" role="status">
+  </div>
+</div>

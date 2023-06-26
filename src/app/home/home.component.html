@@ -30,7 +30,7 @@
   <div *ngIf="dataNotFound && keywordForm.valid">查無資料</div>
 </div>
 
-<ng-container *ngIf="keywordForm.submitted && oneMonthStockData.length === 0 && !isLoading">
+<ng-container *ngIf="keywordForm.submitted && oneMonthStockData.length === 0">
   <h1 class="mt-5 mb-3">
     該股於30日內無交易資訊
   </h1>
@@ -105,10 +105,6 @@
     </tbody>
   </table>
 </ng-container>
-<div class="loading-overlay" *ngIf="isLoading">
-  <div class="spinner-border text-light" role="status">
-  </div>
-</div>
 
 <div bsModal #addPortfolio="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name2" [config]="{backdrop: 'static'}">
   <div class="modal-dialog modal-sm">
