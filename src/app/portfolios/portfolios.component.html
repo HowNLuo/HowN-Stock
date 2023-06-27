@@ -32,7 +32,7 @@
             <div class="card-info d-flex mb-3">
               <div class="mr-5">昨收<br><span class="font-weight-bold">{{ portfolioStockInfo.close }}</span></div>
               <div>漲跌幅<br>
-                <span class="font-weight-bold" [ngStyle]="{'color': portfolioStockInfo.changeRate > 0 ? 'red' : '#5fc31c'}">
+                <span class="font-weight-bold" [ngStyle]="{'color': portfolioStockInfo.changeRate == 0 ? 'black' : portfolioStockInfo.changeRate > 0 ? 'red' : '#5fc31c'}">
                   {{ portfolioStockInfo.changeRate }} %
                 </span>
               </div>
