@@ -17,7 +17,7 @@ export class PortfolioService {
     private apiService: ApiService
   ) { }
 
-  /** 取得所有投資組合 */
+  /** 取得所有投資標的 */
   getPortfolios() {
     return this.apiService.getApi<PortfolioRes>(this.baseUrl + 'portfolios.json', 'getPortfolios')
       .pipe(
@@ -33,17 +33,17 @@ export class PortfolioService {
       )
   }
 
-  /** 更新投資組合 */
+  /** 更新投資標的 */
   updatePortfolio(id: string, req: PortfolioReq) {
     return this.apiService.updateApi(this.baseUrl + `portfolios/${id}.json`, req, 'updatePortFolio');
   }
 
-  /** 更新所有投資組合 */
+  /** 更新所有投資標的 */
   updatePortfolios(req) {
     return this.apiService.updateApi(this.baseUrl + `portfolios.json`, req, 'updatePortFolios');
   }
 
-  /** 刪除指定投資組合 */
+  /** 刪除指定投資標的 */
   deletePortfolio(id: string) {
     return this.apiService.deleteApi(this.baseUrl + `portfolios/${id}.json`, 'deletePortFolio');
   }

@@ -29,10 +29,10 @@ export class HomeComponent implements OnInit {
   title: string;                                  // 所選股票-代號+名稱
   isHovered: boolean;                             // 懸停星號
   chart: Chart;                                   // 折線圖
-  portfolios: Portfolio[] = [];                   // 所有投資組合
+  portfolios: Portfolio[] = [];                   // 所有投資標的
   categories: Category[];                         // 所有類別
   selectedStock: TaiwanStockInfo;                 // 所選股票的基本資訊
-  selectedPortfolio: Portfolio;                   // 所選股票的投資組合資訊
+  selectedPortfolio: Portfolio;                   // 所選股票的投資標的資訊
   selectedCategories: string[] = [];              // 所選股票的類別(編輯)
   cloneSelectedCategories: string[];              // 所選股票的類別(初始)
   sortStatus = {
@@ -115,7 +115,7 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  /** 開始分類投資組合至各類別 */
+  /** 開始分類投資標的至各類別 */
   startClassifyPortfolio() {
     if(!this.categories) {
       this.loadingService.show();

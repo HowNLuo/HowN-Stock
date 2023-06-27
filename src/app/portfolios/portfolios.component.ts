@@ -21,17 +21,17 @@ import { forkJoin } from 'rxjs';
 export class PortfoliosComponent implements OnInit {
   @ViewChild('f') form: NgForm;         //  新增類別的表單
   categories: Category[];               //  所有類別
-  portfolios: Portfolio[];              //  所有投資組合
+  portfolios: Portfolio[];              //  所有投資標的
   stocksInfo: TaiwanStockInfo[] = [];   //  所有個股基本資訊
   editingItem: string = '';             //  點選兩下編輯的類別
   editingName: string = '';             //  點選兩下編輯的類別名稱
   categroiesEdited: Category[];         //  編輯中的所有類別
-  portfoliosEdited: Portfolio[];        //  編輯中的所有投資組合
+  portfoliosEdited: Portfolio[];        //  編輯中的所有投資標的
   isDragging: boolean = false;          //  是否正在拖曳
   draggedIndex: number;                 //  被拖曳的index
   currentCategory: Category;            //  當前類別
-  currentPortfolios: Portfolio[] = [];  //  當前類別的所有投資組合
-  currentPortfoliosStockInfo = [];      //  當前類別的所有投資組合的日成交資訊
+  currentPortfolios: Portfolio[] = [];  //  當前類別的所有投資標的
+  currentPortfoliosStockInfo = [];      //  當前類別的所有投資標的的日成交資訊
 
   constructor(
     private portfolioService: PortfolioService,
@@ -80,7 +80,7 @@ export class PortfoliosComponent implements OnInit {
     this.getCurrentPortfoliosStockInfo();
   }
 
-  /** 取得當前類別的所有投資組合的日成交資訊 */
+  /** 取得當前類別的所有投資標的的日成交資訊 */
   getCurrentPortfoliosStockInfo() {
     this.currentPortfoliosStockInfo = [];
 
@@ -117,7 +117,7 @@ export class PortfoliosComponent implements OnInit {
     }
   }
 
-  /** 移除指定投資組合 */
+  /** 移除指定投資標的 */
   deletePortfolio(portfolioId: string) {
     this.loadingService.show();
     this.portfolios = this.portfolios.map(portfolio => {
@@ -188,7 +188,7 @@ export class PortfoliosComponent implements OnInit {
       });
   }
 
-  /** 異動投資組合處理 */
+  /** 異動投資標的處理 */
   handlePortfoliosModify() {
     this.portfolios = _.cloneDeep(this.portfoliosEdited);
       const transformedData = this.portfoliosEdited.reduce((result, item) => {
@@ -218,7 +218,7 @@ export class PortfoliosComponent implements OnInit {
   deleteCategory(categoryId: string, index: number) {
     this.categroiesEdited.splice(index, 1);
 
-    // 刪除類別，包含該類別的投資組合也要移除該類別，如果投資組合的類別皆被刪除，則移除該投資組合
+    // 刪除類別，包含該類別的投資標的也要移除該類別，如果投資標的的類別皆被刪除，則移除該投資標的
     this.portfoliosEdited.forEach(portfolio => portfolio.categories = portfolio.categories.filter(category => category !== categoryId));
     this.portfoliosEdited = this.portfoliosEdited.filter(portfolio => portfolio.categories.length !== 0);
   }
@@ -236,7 +236,7 @@ export class PortfoliosComponent implements OnInit {
       const draggedItem = this.categroiesEdited[this.draggedIndex];  // 交換的類別
       const dragOverItem = this.categroiesEdited[index];             // 被交換的類別
       const cloneDraggedItem = _.cloneDeep(draggedItem);
-      // 交換類別，投資組合也要交換
+      // 交換類別，投資標的也要交換
       this.portfoliosEdited.forEach(portfolio => {
         if(portfolio.categories.includes(draggedItem.id) && portfolio.categories.includes(dragOverItem.id)) {
           return;

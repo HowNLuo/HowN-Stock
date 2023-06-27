@@ -41,7 +41,7 @@ export class CategoryService {
     return this.apiService.deleteApi(this.baseUrl + `categories/${id}.json`, 'deleteCategory');
   }
 
-  /** 更新所有投資組合 */
+  /** 更新所有投資標的 */
   updateCategories(req) {
     return this.apiService.updateApi(this.baseUrl + 'categories.json', req, 'updateCategories');
   }
