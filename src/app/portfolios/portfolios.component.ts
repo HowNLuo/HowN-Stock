@@ -127,18 +127,15 @@ export class PortfoliosComponent implements OnInit {
       } else {
         return portfolio;
       }
-    });
+    }).filter(portfolio => portfolio.categories.length !== 0 )
+    this.currentPortfoliosStockInfo = this.currentPortfoliosStockInfo.filter(portfolio => portfolio.stockId !== portfolioId);
     const req = this.portfolios.find(portfolio => portfolio.stockId === portfolioId);
-    this.portfolioService.updatePortfolio(portfolioId, req)
-      .pipe(
-        concatMap(() => this.portfolioService.getPortfolios()),
-        tap(res => {
-          this.portfolios = res;
-          this.currentPortfoliosStockInfo = this.currentPortfoliosStockInfo.filter(portfolio => portfolio.stockId !== portfolioId);
-          this.loadingService.hide();
-        })
-      )
-      .subscribe();
+
+    if(!req) {
+      this.portfolioService.deletePortfolio(portfolioId).subscribe(() => this.loadingService.hide());
+    } else {
+      this.portfolioService.updatePortfolio(portfolioId, req).subscribe(() => this.loadingService.hide());
+    }
   }
 
   /** 提交新增類別表單 */
@@ -223,7 +220,7 @@ export class PortfoliosComponent implements OnInit {
 
     // 刪除類別，包含該類別的投資組合也要移除該類別，如果投資組合的類別皆被刪除，則移除該投資組合
     this.portfoliosEdited.forEach(portfolio => portfolio.categories = portfolio.categories.filter(category => category !== categoryId));
-    this.portfoliosEdited.filter(portfolio => portfolio.categories.length !== 0);
+    this.portfoliosEdited = this.portfoliosEdited.filter(portfolio => portfolio.categories.length !== 0);
   }
 
   /** 開始拖曳 */
