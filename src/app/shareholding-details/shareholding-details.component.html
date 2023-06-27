@@ -1,37 +1,38 @@
 <div class="row mt-5">
-  <canvas class="col-md-6" id="chart"></canvas>
+  <canvas class="col-md-6" id="chart" [class.d-none]="shareHoldingDetail.length === 0"></canvas>
   <div class="col-md-6 d-flex flex-column justify-content-center">
-      <h1>總金額：${{ shareHoldingDetail.length === 0 ? 0 : totalAcount | number }}</h1>
-      <button class="btn mt-5 add-btn" (click)="startAddShareholding();addShareholding.show()">新增持股明細</button>
-      <button class="btn mt-5 add-btn" (click)="test()">test</button>
+    <h1>總金額：${{ shareHoldingDetail.length === 0 ? 0 : totalAcount | number }}</h1>
+    <button class="btn mt-5 add-btn" (click)="startAddShareholding();addShareholding.show()">新增持股明細</button>
   </div>
 </div>
 
-<h1 *ngIf="shareHoldingDetail.length === 0 && !isLoading">無持股明細，請新增。</h1>
+<h1 class="mt-5" *ngIf="shareHoldingDetail.length === 0 && !isLoading">無持股明細，請新增。</h1>
 
-<table class="table table-fixed table-hover mt-5" *ngIf="shareHoldingDetail.length > 0">
-  <thead>
-    <tr>
-      <th>股票代號</th>
-      <th>總成本</th>
-    </tr>
-  </thead>
-  <tbody class="list-unstyled">
-    <tr *ngFor="let detail of shareholdingSum">
-      <td>{{ detail.stockId }}</td>
-      <td>{{ detail.cost | number }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="row mt-5">
+  <div class="input-group col-md-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">排序</label>
+    </div>
+    <select class="custom-select" id="inputGroupSelect01" [(ngModel)]="selectedSortOption" (ngModelChange)="sortColumn()">
+      <option value="dateRise">交易日期 ↑</option>
+      <option value="dateDrop" selected>交易日期 ↓</option>
+      <option value="stockIdRise">股票代號 ↑</option>
+      <option value="stockIdDrop">股票代號 ↓</option>
+    </select>
+  </div>
+  <button class="btn col-md-2 switch-btn" (click)="switchDisplayMode('sum')" *ngIf="displayMode==='detail'">總覽顯示</button>
+  <button class="btn col-md-2 switch-btn" (click)="switchDisplayMode('detail')" *ngIf="displayMode==='sum'">明細顯示</button>
+</div>
 
-<table class="table table-fixed table-hover mt-5" *ngIf="shareHoldingDetail.length > 0">
+<table class="table table-fixed table-hover mt-5" *ngIf="displayMode === 'detail' && shareHoldingDetail.length > 0">
   <thead>
     <tr>
       <th>股票代號</th>
       <th>股數</th>
       <th>股價</th>
-      <th>總成本</th>
+      <th>成本價</th>
       <th>交易日期</th>
+      <th></th>
     </tr>
   </thead>
   <tbody class="list-unstyled">
@@ -40,6 +41,24 @@
       <td>{{ detail.stockUnits | number }}</td>
       <td>{{ detail.dealPrice | number }}</td>
       <td>{{ detail.stockUnits * detail.dealPrice | number }}</td>
+      <td>{{ detail.date }}</td>
+      <td><i class="fa-solid fa-trash" type="button" (click)="deleteShareHoldingDetail(detail.id)"></i></td>
+    </tr>
+  </tbody>
+</table>
+<table class="table table-fixed table-hover mt-5" *ngIf="displayMode === 'sum' && shareHoldingDetail.length > 0">
+  <thead>
+    <tr>
+      <th>股票代號</th>
+      <th>總股數</th>
+      <th>總成本</th>
+    </tr>
+  </thead>
+  <tbody class="list-unstyled">
+    <tr *ngFor="let detail of shareHoldingSum">
+      <td>{{ detail.stockId }}</td>
+      <td>{{ detail.stockUnits | number }}</td>
+      <td>{{ detail.cost | number }}</td>
       <td>{{ detail.date }}</td>
     </tr>
   </tbody>
@@ -88,11 +107,5 @@
         </form>
       </div>
     </div>
-  </div>
-</div>
-
-
-<div class="loading-overlay" *ngIf="isLoading">
-  <div class="spinner-border text-light" role="status">
   </div>
 </div>

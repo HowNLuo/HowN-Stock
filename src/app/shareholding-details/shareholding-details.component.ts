@@ -20,20 +20,28 @@ export class ShareholdingDetailsComponent implements OnInit {
   shareHoldingDetail: Shareholding[] = [];
   stocksInfo: TaiwanStockInfo[];
   totalAcount: number;
-  chart: Chart
+  chart: Chart;
+  displayMode: 'sum' | 'detail' = 'sum';
+  selectedSortOption: string = 'dateDrop';
+  sortStatus = {
+    stockId: true,
+    date: false
+  };
 
   // 加載中
   get isLoading(): boolean { return this.loadingService.isLoading; }
 
-  get shareholdingSum() {
+  get shareHoldingSum() {
     let result = [];
     this.shareHoldingDetail.forEach(detail => {
       const existingDetail = result.find(r => r.stockId === detail.stockId);
       if(existingDetail) {
         existingDetail.cost += detail.dealPrice * detail.stockUnits;
+        existingDetail.stockUnits += detail.stockUnits;
       } else {
         result.push({
           stockId: detail.stockId,
+          stockUnits: detail.stockUnits,
           cost: detail.dealPrice * detail.stockUnits
         });
       }
@@ -56,8 +64,9 @@ export class ShareholdingDetailsComponent implements OnInit {
         tap(res => {
           if(res.length > 0) {
             this.shareHoldingDetail = res;
-            this.calcTotalAmount(res);
+            this.calcTotalAmount();
             this.drawChart();
+            this.sortColumn();
           }
           this.loadingService.hide()
         })
@@ -92,13 +101,13 @@ export class ShareholdingDetailsComponent implements OnInit {
         tap(() => this.shareHoldingDetail.push(req))
       )
       .subscribe(() => {
-        this.calcTotalAmount(this.shareHoldingDetail);
+        this.calcTotalAmount();
         this.drawChart();
       });
   }
 
-  calcTotalAmount(shareholding: Shareholding[]) {
-    this.totalAcount = shareholding.map(detail => detail.dealPrice * detail.stockUnits).reduce((a, b) => a + b, 0);
+  calcTotalAmount() {
+    this.totalAcount = this.shareHoldingDetail.map(detail => detail.dealPrice * detail.stockUnits).reduce((a, b) => a + b, 0);
   }
 
   drawChart() {
@@ -108,34 +117,71 @@ export class ShareholdingDetailsComponent implements OnInit {
     }
     if(canvas) {
       const ctx = canvas.getContext('2d');
-
-      const colors = ['#9F35FF','#BE77FF','#D3A4FF','#DCB5FF','#E6CAFF',];
+      const colors = ['#F43545','#FF8901','#FAD717','#00BA71','#00C2DE','#00418D','#5F2879'];
       const backgroundColors = [];
-      this.shareholdingSum.forEach((r,i) => {
+
+      this.shareHoldingSum.forEach((r,i) => {
         const color = colors[i % colors.length];
         backgroundColors.push(color);
       })
-
       this.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: this.shareholdingSum.map(r => r.stockId),
+          labels: this.shareHoldingSum.map(r => r.stockId),
           datasets: [{
-            data: this.shareholdingSum.map(r => r.cost),
+            data: this.shareHoldingSum.map(r => r.cost),
             backgroundColor: backgroundColors,
             hoverBackgroundColor: backgroundColors
           }]
         },
         options: {
-          responsive: true
+          responsive: true,
+          legend: {
+            position: 'left'
+          }
         }
       })
     }
   }
 
+  sortColumn() {
+    switch (this.selectedSortOption) {
+      case 'stockIdRise':
+        this.shareHoldingDetail.sort((a, b) => a.stockId.localeCompare(b.stockId));
+        break;
+      case 'stockIdDrop':
+        this.shareHoldingDetail.sort((a, b) => b.stockId.localeCompare(a.stockId));
+        break;
+      case 'dateRise':
+        this.shareHoldingDetail.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        break;
+      case 'dateDrop':
+        this.shareHoldingDetail.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
+      default:
+        // 預設排序方式
+        break;
+    }
+  }
+
+  switchDisplayMode(mode: 'sum' | 'detail') {
+    this.displayMode = mode;
+  }
+
+  deleteShareHoldingDetail(id: string) {
+    this.loadingService.show();
+    this.shareholdingService.deleteShareholding(id)
+      .subscribe(() => {
+        this.loadingService.hide();
+        this.shareHoldingDetail = this.shareHoldingDetail.filter(res => res.id !== id);
+        this.calcTotalAmount();
+        this.drawChart();
+      });
+  }
+
   test() {
     console.log(this.shareHoldingDetail)
-    console.log(this.shareholdingSum)
+    console.log(this.shareHoldingSum)
     console.log(this.form)
   }
 }
