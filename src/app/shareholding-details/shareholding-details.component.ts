@@ -7,8 +7,9 @@ import { StockService } from './../core/service/stock.service';
 import { TaiwanStockInfo } from './../core/interface/stock.interface';
 import { ShareholdingService } from './../core/service/shareholding.service';
 
-import {tap} from 'rxjs/operators'
+import {concatMap, tap} from 'rxjs/operators'
 import Chart from 'chart.js'
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-shareholding-details',
@@ -18,10 +19,13 @@ import Chart from 'chart.js'
 export class ShareholdingDetailsComponent implements OnInit {
   form: FormGroup;
   shareHoldingDetail: Shareholding[] = [];
+  cloneShareHoldingDetail: Shareholding[];
   stocksInfo: TaiwanStockInfo[];
   totalAcount: number;
   chart: Chart;
   displayMode: 'sum' | 'detail' = 'sum';
+  editItem: Shareholding;
+  editIndex: number;
   selectedSortOption: string = 'dateDrop';
   sortStatus = {
     stockId: true,
@@ -98,7 +102,8 @@ export class ShareholdingDetailsComponent implements OnInit {
   onAddShareholdingSubmit(req) {
     this.shareholdingService.addShareholding(req)
       .pipe(
-        tap(() => this.shareHoldingDetail.push(req))
+        concatMap(() => this.shareholdingService.getShareholding()),
+        tap(res => this.shareHoldingDetail = res)
       )
       .subscribe(() => {
         this.calcTotalAmount();
@@ -144,6 +149,10 @@ export class ShareholdingDetailsComponent implements OnInit {
     }
   }
 
+  switchDisplayMode(mode: 'sum' | 'detail') {
+    this.displayMode = mode;
+  }
+
   sortColumn() {
     switch (this.selectedSortOption) {
       case 'stockIdRise':
@@ -164,8 +173,31 @@ export class ShareholdingDetailsComponent implements OnInit {
     }
   }
 
-  switchDisplayMode(mode: 'sum' | 'detail') {
-    this.displayMode = mode;
+  startEditShareHoldingDetail(index: number) {
+    this.editItem = this.shareHoldingDetail[index];
+    this.editIndex = index;
+    this.cloneShareHoldingDetail = _.cloneDeep(this.shareHoldingDetail);
+  }
+
+  endEditShareHoldingDetail() {
+    this.editItem = null;
+    this.editIndex = -1;
+    if(!_.isEqual(this.shareHoldingDetail, this.cloneShareHoldingDetail)) {
+      const req = {}
+      this.shareHoldingDetail.map(item => {
+        req[item.id] = {
+          date: item.date,
+          dealPrice: item.dealPrice,
+          stockId: item.stockId,
+          stockUnits: item.stockUnits
+        };
+      })
+      this.shareholdingService.updateShareholding(req)
+      .subscribe(() => {
+        this.calcTotalAmount();
+        this.drawChart();
+      });
+    };
   }
 
   deleteShareHoldingDetail(id: string) {
@@ -183,5 +215,17 @@ export class ShareholdingDetailsComponent implements OnInit {
     console.log(this.shareHoldingDetail)
     console.log(this.shareHoldingSum)
     console.log(this.form)
+    const req = this.shareHoldingDetail.map(item => {
+      const transformedItem = {
+        [item.id]: {
+          date: item.date,
+          dealPrice: item.dealPrice,
+          stockId: item.stockId,
+          stockUnits: item.stockUnits
+        }
+      };
+      return transformedItem;
+    });
+    console.log(req);
   }
 }

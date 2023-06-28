@@ -207,11 +207,7 @@ export class PortfoliosComponent implements OnInit {
   /** 結束編輯類別名稱 */
   endEditCategoryName(index: number) {
     this.editingItem = '';
-    if(this.categroiesEdited.map(category => category.categoryName).includes(this.editingName)) {
-      alert('重複命名');
-    } else {
-      this.categroiesEdited[index].categoryName = this.editingName;
-    }
+    this.categroiesEdited[index].categoryName = this.editingName;
   }
 
   /** 刪除指定類別 */

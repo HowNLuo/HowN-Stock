@@ -7,10 +7,19 @@
 .submit-btn {
   background-color: #c664ff;
   color: white;
+  width: 100%;
 }
 
 .switch-btn {
   color: #c664ff;
   border: 2px solid #c664ff;
   font-weight: bold;
+}
+
+form {
+  padding: 10px 30px;
+}
+
+table input{
+  width: 130px;
 }
