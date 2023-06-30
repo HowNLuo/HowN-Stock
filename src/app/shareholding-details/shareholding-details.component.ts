@@ -210,22 +210,4 @@ export class ShareholdingDetailsComponent implements OnInit {
         this.drawChart();
       });
   }
-
-  test() {
-    console.log(this.shareHoldingDetail)
-    console.log(this.shareHoldingSum)
-    console.log(this.form)
-    const req = this.shareHoldingDetail.map(item => {
-      const transformedItem = {
-        [item.id]: {
-          date: item.date,
-          dealPrice: item.dealPrice,
-          stockId: item.stockId,
-          stockUnits: item.stockUnits
-        }
-      };
-      return transformedItem;
-    });
-    console.log(req);
-  }
 }
