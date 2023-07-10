@@ -18,14 +18,14 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
-  declarations: [	
+  declarations: [
     AppComponent,
     HeaderComponent,
     PortfoliosComponent,
     HomeComponent,
     StockInfoComponent,
     ShareholdingDetailsComponent,
-      AuthComponent
+    AuthComponent
    ],
   imports: [
     FormsModule,

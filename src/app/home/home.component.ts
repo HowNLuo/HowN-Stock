@@ -3,7 +3,6 @@ import { NgForm } from '@angular/forms';
 
 import { CategoryService } from './../core/service/category.service';
 import { LoadingService } from './../core/service/loading.service';
-import { ApiService } from './../core/service/api.service';
 import { Category, Portfolio } from './../core/interface/portfolio.interface';
 import { PortfolioService } from './../core/service/portfolio.service';
 import { StockService } from './../core/service/stock.service';
@@ -65,7 +64,6 @@ export class HomeComponent implements OnInit, OnDestroy{
   constructor(
     private stockService: StockService,
     private portfolioService: PortfolioService,
-    private apiService: ApiService,
     private loadingService: LoadingService,
     private categoryService: CategoryService,
     private authService: AuthService

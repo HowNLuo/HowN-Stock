@@ -1,18 +1,16 @@
-import { AuthService } from './auth.service';
-import { LoadingService } from './loading.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { catchError, exhaustMap, tap, take } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-
+import { take, exhaustMap, tap, catchError } from 'rxjs/operators';
 import { ErrorComponent } from 'src/app/shared/modals/error/error.component';
+import { AuthService } from './auth.service';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class FirebaseService {
   modalRef: BsModalRef;
 
   constructor(

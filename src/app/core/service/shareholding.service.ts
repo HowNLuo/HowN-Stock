@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 
 import { Shareholding, ShareholdingRes } from './../interface/shareholding.interface';
-import { ApiService } from './api.service';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +11,12 @@ export class ShareholdingService {
   baseUrl = 'https://hown-stock-default-rtdb.firebaseio.com/';
 
   constructor(
-    private apiService: ApiService
+    private firebase: FirebaseService
   ) { }
 
   /** 取得投資明細 */
   getShareholding() {
-    return this.apiService.getApi<ShareholdingRes>(this.baseUrl + 'shareholding.json', 'getShareholding')
+    return this.firebase.getApi<ShareholdingRes>(this.baseUrl + 'shareholding.json', 'getShareholding')
       .pipe(
         map(res => {
           const postsArray: Shareholding[] = [];
@@ -32,16 +32,16 @@ export class ShareholdingService {
 
   /** 新增持股明細 */
   addShareholding(req: Shareholding) {
-    return this.apiService.postApi(this.baseUrl + 'shareholding.json', req, 'addShareholding');
+    return this.firebase.postApi(this.baseUrl + 'shareholding.json', req, 'addShareholding');
   }
 
   /** 刪除持股明細 */
   deleteShareholding(id: string) {
-    return this.apiService.deleteApi(this.baseUrl + `shareholding/${id}.json`, 'deleteShareholding');
+    return this.firebase.deleteApi(this.baseUrl + `shareholding/${id}.json`, 'deleteShareholding');
   }
 
   /** 更新持股明細 */
   updateShareholding(req) {
-    return this.apiService.updateApi(this.baseUrl + 'shareholding.json', req, 'updateShareholding');
+    return this.firebase.updateApi(this.baseUrl + 'shareholding.json', req, 'updateShareholding');
   }
 }

@@ -64,7 +64,7 @@ export class AuthService {
 
     return this.http.post<AuthRes>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBI5yF4viePug_6zPRgqbpUjsYmvrlPhx8', req)
       .pipe(
-        tap(() => console.log('signIn')),
+        tap(res => console.log('signIn', res)),
         tap(res => this.handleAuthentication(res.email, res.localId, res.idToken, +res.expiresIn)),
         catchError(error => this.handleApiError(error))
       );
@@ -86,15 +86,17 @@ export class AuthService {
       id: string;
       _token: string;
       _tokenExpirationDate: string;
-    }
-    = JSON.parse(localStorage.getItem('userData'));
-    const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+    } = JSON.parse(localStorage.getItem('userData'));
+    if(!userData) {
+      return;
+    };
 
-    if(userData && loadedUser.token) {
+    const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+    if(loadedUser.token) {
       this.user.next(loadedUser);
       const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
       this.autoLogout(expirationDuration);
-    }
+    };
   }
 
   autoLogout(expirationDuration: number) {
