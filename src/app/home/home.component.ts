@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { CategoryService } from './../core/service/category.service';
@@ -15,13 +15,15 @@ import { delay, tap, concatMap } from 'rxjs/operators';
 import * as Chart from 'chart.js';
 import * as moment from 'moment';
 import * as _ from 'lodash'
+import { of, Subscription } from 'rxjs';
+import { AuthService } from '../core/service/auth.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy{
   @ViewChild('keywordForm') keywordForm: NgForm;  // 搜尋欄位
   oneMonthStockData: TaiwanStockPrice[] = [];     // 30天內股票成交資訊
   lastDayStockPrice: TaiwanStockPrice;            // 最近一天股票成交資訊
@@ -47,6 +49,10 @@ export class HomeComponent implements OnInit {
     Trading_turnover: 'drop'
   };
 
+
+  isAuthenticated: boolean = false;
+  private userSub: Subscription;
+
   // 搜尋欄位是否查無個股
   get dataNotFound() { return this.stocksInfo?.every(stockInfo => stockInfo.stock_id !== this.keywordForm.form.value.keyword); }
 
@@ -61,11 +67,19 @@ export class HomeComponent implements OnInit {
     private portfolioService: PortfolioService,
     private apiService: ApiService,
     private loadingService: LoadingService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     this.setDatalistOptions();
+    this.userSub = this.authService.user.subscribe(user => {
+      this.isAuthenticated = !!user;
+    })
+  }
+
+  ngOnDestroy() {
+    this.userSub.unsubscribe();
   }
 
   /** 設定台股代號選項 */
@@ -93,7 +107,7 @@ export class HomeComponent implements OnInit {
           this.lastDayStockPrice = res.data[res.data.length - 1];
           this.oneMonthStockData = res.data.reverse();
           this.title = this.selectedStock.stock_id + ' ' + this.selectedStock.stock_name;
-          return this.portfolioService.getPortfolios();
+          return this.isAuthenticated ? this.portfolioService.getPortfolios() : of([]);
         }),
         tap(res => {
           if(res.length > 0) {

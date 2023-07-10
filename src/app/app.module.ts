@@ -15,15 +15,17 @@ import { StockInfoComponent } from './stock-info/stock-info.component';
 import { ShareholdingDetailsComponent } from './shareholding-details/shareholding-details.component';
 
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
-  declarations: [
+  declarations: [	
     AppComponent,
     HeaderComponent,
     PortfoliosComponent,
     HomeComponent,
     StockInfoComponent,
-    ShareholdingDetailsComponent
+    ShareholdingDetailsComponent,
+      AuthComponent
    ],
   imports: [
     FormsModule,

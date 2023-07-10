@@ -1,0 +1,33 @@
+<div class="row mt-5 justify-content-center">
+  <div class="col-md-4">
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+      <div class="form-group">
+        <label for="email" class="email">帳號(信箱)</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          ngModel
+          name="email"
+          required
+          email
+        >
+      </div>
+      <div class="form-group">
+        <label for="password" class="password">密碼</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          ngModel
+          name="password"
+          required
+          >
+      </div>
+      <div>
+        <button type="submit" class="btn sign-in" [disabled]="f.invalid">{{ isLoginMode ? '登入' : '註冊'}}</button> |
+        <button type="button" class="btn sign-in" (click)="onSwitchMode()">{{ !isLoginMode ? '切換至登入' : '切換至註冊'}}</button>
+      </div>
+    </form>
+  </div>
+</div>

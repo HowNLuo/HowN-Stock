@@ -5,6 +5,7 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>呼叫{{ error.url }}失敗</p>
+  <p>API URL：{{ error.url }}</p>
   <p>原因：{{ error.statusText }}</p>
+  <p>錯誤提示：{{ error.error.error.message }}</p>
 </div>

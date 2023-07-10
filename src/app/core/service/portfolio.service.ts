@@ -1,10 +1,9 @@
-import { ApiService } from './api.service';
-import { Portfolio, PortfolioRes, CategoryRes, Category, CategoryReq } from './../interface/portfolio.interface';
 import { Injectable } from '@angular/core';
 
+import { map } from 'rxjs/operators';
 
-import { map, tap, catchError, finalize } from 'rxjs/operators';
-
+import { ApiService } from './api.service';
+import { Portfolio, PortfolioRes } from './../interface/portfolio.interface';
 import { PortfolioReq } from '../interface/portfolio.interface';
 
 @Injectable({

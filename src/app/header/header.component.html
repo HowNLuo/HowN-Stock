@@ -6,14 +6,18 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/home" routerLinkActive="active" href="#">首頁</a>
+        <a class="nav-link" routerLink="/home" routerLinkActive="active">首頁</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/portfolios" routerLinkActive="active" href="#">投資組合</a>
+      <li class="nav-item" *ngIf="isAuthenticated">
+        <a class="nav-link" routerLink="/portfolios" routerLinkActive="active">投資組合</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/shareholding-details" routerLinkActive="active" href="#">持股明細</a>
+      <li class="nav-item" *ngIf="isAuthenticated">
+        <a class="nav-link" routerLink="/shareholding-details" routerLinkActive="active">持股明細</a>
       </li>
     </ul>
+  </div>
+  <div>
+    <a class="auth-status" routerLink="/auth" *ngIf="!isAuthenticated">登入<i class="fa-solid fa-right-to-bracket"></i></a>
+    <a class="auth-status" *ngIf="isAuthenticated" (click)="logout()">登出<i class="fa-solid fa-right-from-bracket"></i></a>
   </div>
 </nav>

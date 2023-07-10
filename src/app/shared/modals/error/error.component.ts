@@ -10,10 +10,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 export class ErrorComponent implements OnInit {
   @Input() error: HttpErrorResponse;
 
-
   constructor(public modalRef: BsModalRef) { }
 
   ngOnInit() {
-}
+  }
 
 }
