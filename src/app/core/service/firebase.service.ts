@@ -1,9 +1,9 @@
+import { ModalDialogComponent } from './../../shared/modals/modalDialog/modalDialog.component';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { throwError } from 'rxjs';
 import { take, exhaustMap, tap, catchError } from 'rxjs/operators';
-import { ErrorComponent } from 'src/app/shared/modals/error/error.component';
 import { AuthService } from './auth.service';
 import { LoadingService } from './loading.service';
 
@@ -25,7 +25,7 @@ export class FirebaseService {
       take(1),
       exhaustMap(user => {
         return this.http.get<T>(url, {
-          params: new HttpParams().set('auth', user?.token)
+          params: new HttpParams().set('auth', user.token)
         })
       }),
       tap(() => console.log(functionName)),
@@ -38,7 +38,7 @@ export class FirebaseService {
       take(1),
       exhaustMap(user => {
         return this.http.post<T>(url, req, {
-          params: new HttpParams().set('auth', user?.token)
+          params: new HttpParams().set('auth', user.token)
         })
       }),
       tap(() => console.log(functionName)),
@@ -51,7 +51,7 @@ export class FirebaseService {
       take(1),
       exhaustMap(user => {
         return this.http.delete<T>(url, {
-          params: new HttpParams().set('auth', user?.token)
+          params: new HttpParams().set('auth', user.token)
         })
       }),
       tap(() => console.log(functionName)),
@@ -64,7 +64,7 @@ export class FirebaseService {
       take(1),
       exhaustMap(user => {
         return this.http.put<T>(url, req, {
-          params: new HttpParams().set('auth', user?.token)
+          params: new HttpParams().set('auth', user.token)
         })
       }),
       tap(() => console.log(functionName)),
@@ -76,7 +76,8 @@ export class FirebaseService {
   handleApiError(error: any) {
     console.error('API錯誤', error);
     this.loadingService.hide();
-    this.modalRef = this.bsModalService.show(ErrorComponent, {initialState: {error}})
+    this.modalRef = this.bsModalService.show(ModalDialogComponent)
+    this.modalRef.content.message = error.message;
     return throwError('發生錯誤')
   }
 }

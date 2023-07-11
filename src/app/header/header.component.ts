@@ -1,6 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { AuthService } from './../core/service/auth.service';
 import { Subscription } from 'rxjs';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-header',
@@ -8,11 +9,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  isAuthenticated: boolean = false;
   private userSub: Subscription;
+  isAuthenticated: boolean = false;
+  modalRef: BsModalRef;
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private modalService: BsModalService
   ) { }
 
   ngOnInit() {
@@ -25,7 +28,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userSub.unsubscribe();
   }
 
-  logout() {
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+  }
+
+  confirm() {
     this.authService.logout();
+    this.modalRef.hide();
   }
 }

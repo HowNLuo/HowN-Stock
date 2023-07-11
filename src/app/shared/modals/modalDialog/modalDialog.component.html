@@ -1,11 +1,9 @@
 <div class="modal-header">
-  <h4 class="modal-title">錯誤訊息</h4>
+  <h4 class="modal-title">{{ title }}</h4>
   <button type="button" class="close" (click)="modalRef.hide()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  <p>API URL：{{ error.url }}</p>
-  <p>原因：{{ error.statusText }}</p>
-  <p>錯誤提示：{{ error.error.error.message }}</p>
+  <p>{{ message }}</p>
 </div>
