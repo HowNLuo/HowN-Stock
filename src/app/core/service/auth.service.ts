@@ -9,6 +9,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { User } from './../../auth/user.modal';
 import { ModalDialogComponent } from './../../shared/modals/modalDialog/modalDialog.component';
 import { LoadingService } from './loading.service';
+import { environment } from 'src/environments/environment';
 
 interface AuthReq {
   email: string;
@@ -49,7 +50,7 @@ export class AuthService {
       returnSecureToken: true
     };
 
-    return this.http.post<AuthRes>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBI5yF4viePug_6zPRgqbpUjsYmvrlPhx8', req)
+    return this.http.post<AuthRes>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseAPIKey}`, req)
       .pipe(
         tap(() => console.log('signUp')),
         tap(res => this.handleAuthentication(res.email, res.localId, res.idToken, +res.expiresIn)),
@@ -64,7 +65,7 @@ export class AuthService {
       returnSecureToken: true
     };
 
-    return this.http.post<AuthRes>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBI5yF4viePug_6zPRgqbpUjsYmvrlPhx8', req)
+    return this.http.post<AuthRes>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`, req)
       .pipe(
         tap(() => console.log('login')),
         tap(res => this.handleAuthentication(res.email, res.localId, res.idToken, +res.expiresIn)),
