@@ -1,27 +1,29 @@
-# Stock
+# 前言
+提供使用者**登入、註冊、查詢股票交易紀錄、編輯投資組合、記錄持股明細**。
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.1.
+## 登入
+![](https://hackmd.io/_uploads/S1_P9FoKh.png)
+提供使用者登入、註冊
+> 運用技術：firebase的auth API、setTimeout自動登出
 
-## Development server
+## 首頁
+![](https://hackmd.io/_uploads/Sk6C5cMKh.png)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+提供使用者輸入股票代號，查詢個股30日內交易紀錄，以table呈現，並使用chart.js繪製折線圖，可以一眼看出股票走勢。欲追蹤之標的，可點選**加入投資組合**將個股加入至投資組合中。
+> 運用技術：finmind、chart.js、ngModel
+## 投資組合
+![](https://hackmd.io/_uploads/Hkt3p9zKh.png)
 
-## Code scaffolding
+提供使用者對投資組合類別進行新增、編輯、排序、刪除，及查看追蹤標的資訊、並提供刪除鈕。
+> 運用技術：drag拖曳功能、ngModel
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 持股明細
+![](https://hackmd.io/_uploads/Bk16pqzY2.png)
+提供使用者對持股明細進行新增、編輯、排序、刪除，並以chart.js繪製圓餅圖。
+> 運用技術：chart.js、Reactived Form
 
-## Build
+## 其他
+錯誤處理、bootstrap、ngx-bootstrap、後端網站(firebase)、OpenAPI(finmind)、authGuard
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## 待開發
+SCSS設定顏色變數、股票詳細資料、排版、持股明細頁的折線圖、登入(不要存在localStorage)
