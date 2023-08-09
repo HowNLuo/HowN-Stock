@@ -65,7 +65,9 @@ export class AuthService {
       returnSecureToken: true
     };
 
-    return this.http.post<AuthRes>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`, req)
+    return this.http.post<AuthRes>(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`, req
+    )
       .pipe(
         tap(() => console.log('login')),
         tap(res => this.handleAuthentication(res.email, res.localId, res.idToken, +res.expiresIn)),
@@ -79,7 +81,7 @@ export class AuthService {
     this.userId = '';
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
-    if(this.tokenExpirationTimer) {
+    if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     };
     this.tokenExpirationTimer = null;
@@ -93,12 +95,12 @@ export class AuthService {
       _token: string;
       _tokenExpirationDate: string;
     } = JSON.parse(localStorage.getItem('userData'));
-    if(!userData) {
+    if (!userData) {
       return;
     };
 
     const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
-    if(loadedUser.token) {
+    if (loadedUser.token) {
       this.user.next(loadedUser);
       this.userId = loadedUser.id;
 

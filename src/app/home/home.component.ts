@@ -49,14 +49,16 @@ export class HomeComponent implements OnInit, OnDestroy{
   };
 
 
-  isAuthenticated: boolean = false;
+  isAuthenticated = false;
   private userSub: Subscription;
 
   // 搜尋欄位是否查無個股
   get dataNotFound() { return this.stocksInfo?.every(stockInfo => stockInfo.stock_id !== this.keywordForm.form.value.keyword); }
 
   // 所選股票是否加入至投資組合
-  get isInPortfolios() { return this.portfolios ? this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id) : false; }
+  get isInPortfolios() {
+    return this.portfolios ? this.portfolios.some(portfolio => portfolio.stockId === this.selectedStock.stock_id) : false;
+  }
 
   // 是否異動過categories
   get categoriesModified() { return !_.isEqual(this.selectedCategories, this.cloneSelectedCategories); }
@@ -108,7 +110,7 @@ export class HomeComponent implements OnInit, OnDestroy{
           return this.isAuthenticated ? this.portfolioService.getPortfolios() : of([]);
         }),
         tap(res => {
-          if(res.length > 0) {
+          if (res.length > 0) {
             this.portfolios = res;
             this.selectedPortfolio = res.find(portfolio => portfolio.stockId === this.keywordForm.form.value.keyword);
             this.selectedCategories = res.find(portfolio => portfolio.stockId === this.selectedStock.stock_id)?.categories ?? [];
@@ -129,7 +131,7 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   /** 開始分類投資標的至各類別 */
   startClassifyPortfolio() {
-    if(!this.categories) {
+    if (!this.categories) {
       this.loadingService.show();
       this.categoryService.getCategories()
         .subscribe(res => {
@@ -141,8 +143,8 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   /** 提交分類結果 */
   endClassifyPortfolio() {
-    if(this.categoriesModified) {
-      if(this.selectedCategories.length === 0) {
+    if (this.categoriesModified) {
+      if (this.selectedCategories.length === 0) {
         this.removeFromPortfolios();
       } else {
         this.cloneSelectedCategories = _.cloneDeep(this.selectedCategories);
@@ -164,14 +166,14 @@ export class HomeComponent implements OnInit, OnDestroy{
   /** 繪製折線圖 */
   drawChart() {
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
-    if(this.chart) {
+    if (this.chart) {
       this.chart.destroy();  // 預防canvas重複渲染
     }
-    if(canvas) {
+    if (canvas) {
       const ctx = canvas.getContext('2d');
 
-      let xArray = [];
-      let yArray = [];
+      const xArray = [];
+      const yArray = [];
       this.oneMonthStockData.forEach(stockData => {
         xArray.push(stockData.date.slice(-5));
         yArray.push(stockData.close);
@@ -205,10 +207,10 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   /** 排序欄位 */
   sortColumn(columnName: string) {
-    if(this.sortStatus[columnName] === 'drop') {
+    if (this.sortStatus[columnName] === 'drop') {
       this.sortStatus[columnName] = 'rise';
-      this.oneMonthStockData.sort((a,b) => {
-        if(columnName === 'date') {
+      this.oneMonthStockData.sort((a, b) => {
+        if (columnName === 'date') {
           const dateA = new Date(a.date);
           const dateB = new Date(b.date);
           return dateA.getTime() - dateB.getTime();
@@ -218,8 +220,8 @@ export class HomeComponent implements OnInit, OnDestroy{
       })
     } else {
       this.sortStatus[columnName] = 'drop';
-      this.oneMonthStockData.sort((a,b) => {
-        if(columnName === 'date') {
+      this.oneMonthStockData.sort((a, b) => {
+        if (columnName === 'date') {
           const dateA = new Date(a.date);
           const dateB = new Date(b.date);
           return dateB.getTime() - dateA.getTime();
@@ -232,7 +234,7 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   /** 勾選類別 */
   toggleCategory(categoryId: string, isChecked: boolean) {
-    if(isChecked) {
+    if (isChecked) {
       this.selectedCategories.push(categoryId);
     } else {
       this.selectedCategories = this.selectedCategories.filter(category => category !== categoryId);

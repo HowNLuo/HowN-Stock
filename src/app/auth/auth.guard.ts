@@ -21,7 +21,7 @@ constructor(
       take(1),
       map(user => {
         const isAuth = !!user;
-        if(isAuth) {
+        if (isAuth) {
           return true;
         } else {
           return this.router.createUrlTree(['/auth']);

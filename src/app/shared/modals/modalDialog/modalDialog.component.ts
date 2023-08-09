@@ -2,7 +2,7 @@ import { Component, AfterViewInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
-  selector: 'app-modalDialog',
+  selector: 'app-modal-dialog',
   templateUrl: './modalDialog.component.html',
   styleUrls: ['./modalDialog.component.scss']
 })

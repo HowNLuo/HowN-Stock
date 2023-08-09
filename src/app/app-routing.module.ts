@@ -11,8 +11,8 @@ import { ShareholdingDetailsComponent } from './shareholding-details/shareholdin
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'portfolios', canActivate:[AuthGuard], component: PortfoliosComponent },
-  { path: 'shareholding-details', canActivate:[AuthGuard], component: ShareholdingDetailsComponent },
+  { path: 'portfolios', canActivate: [AuthGuard], component: PortfoliosComponent },
+  { path: 'shareholding-details', canActivate: [AuthGuard], component: ShareholdingDetailsComponent },
   { path: 'auth', component: AuthComponent },
   { path: '**', redirectTo: 'home'}
 ];

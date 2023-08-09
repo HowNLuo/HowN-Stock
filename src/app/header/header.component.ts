@@ -10,7 +10,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
-  isAuthenticated: boolean = false;
+  isAuthenticated = false;
   modalRef: BsModalRef;
 
   constructor(

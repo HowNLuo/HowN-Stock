@@ -26,7 +26,7 @@ export class ShareholdingDetailsComponent implements OnInit {
   displayMode: 'sum' | 'detail' = 'sum';
   editItem: Shareholding;
   editIndex: number;
-  selectedSortOption: string = 'dateDrop';
+  selectedSortOption = 'dateDrop';
   sortStatus = {
     stockId: true,
     date: false
@@ -36,10 +36,10 @@ export class ShareholdingDetailsComponent implements OnInit {
   get isLoading(): boolean { return this.loadingService.isLoading; }
 
   get shareHoldingSum() {
-    let result = [];
+    const result = [];
     this.shareHoldingDetail.forEach(detail => {
       const existingDetail = result.find(r => r.stockId === detail.stockId);
-      if(existingDetail) {
+      if (existingDetail) {
         existingDetail.cost += detail.dealPrice * detail.stockUnits;
         existingDetail.stockUnits += detail.stockUnits;
       } else {
@@ -66,7 +66,7 @@ export class ShareholdingDetailsComponent implements OnInit {
     this.shareholdingService.getShareholding()
       .pipe(
         tap(res => {
-          if(res.length > 0) {
+          if (res.length > 0) {
             this.shareHoldingDetail = res;
             this.calcTotalAmount();
             this.drawChart();
@@ -89,7 +89,7 @@ export class ShareholdingDetailsComponent implements OnInit {
 
   startAddShareholding() {
     this.form.reset();
-    if(!this.stocksInfo) {
+    if (!this.stocksInfo) {
       this.loadingService.show()
       this.stockService.getTaiwanStockInfo()
         .subscribe(res => {
@@ -117,15 +117,15 @@ export class ShareholdingDetailsComponent implements OnInit {
 
   drawChart() {
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
-    if(this.chart) {
+    if (this.chart) {
       this.chart.destroy();
     }
-    if(canvas) {
+    if (canvas) {
       const ctx = canvas.getContext('2d');
-      const colors = ['#F43545','#FF8901','#FAD717','#00BA71','#00C2DE','#00418D','#5F2879'];
+      const colors = ['#F43545', '#FF8901', '#FAD717', '#00BA71', '#00C2DE', '#00418D', '#5F2879'];
       const backgroundColors = [];
 
-      this.shareHoldingSum.forEach((r,i) => {
+      this.shareHoldingSum.forEach((r, i) => {
         const color = colors[i % colors.length];
         backgroundColors.push(color);
       })
@@ -182,7 +182,7 @@ export class ShareholdingDetailsComponent implements OnInit {
   endEditShareHoldingDetail() {
     this.editItem = null;
     this.editIndex = -1;
-    if(!_.isEqual(this.shareHoldingDetail, this.cloneShareHoldingDetail)) {
+    if (!_.isEqual(this.shareHoldingDetail, this.cloneShareHoldingDetail)) {
       const req = {}
       this.shareHoldingDetail.map(item => {
         req[item.id] = {

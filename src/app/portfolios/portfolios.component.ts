@@ -23,11 +23,11 @@ export class PortfoliosComponent implements OnInit {
   categories: Category[];               //  所有類別
   portfolios: Portfolio[];              //  所有投資標的
   stocksInfo: TaiwanStockInfo[] = [];   //  所有個股基本資訊
-  editingItem: string = '';             //  點選兩下編輯的類別
-  editingName: string = '';             //  點選兩下編輯的類別名稱
+  editingItem = '';             //  點選兩下編輯的類別
+  editingName = '';             //  點選兩下編輯的類別名稱
   categroiesEdited: Category[];         //  編輯中的所有類別
   portfoliosEdited: Portfolio[];        //  編輯中的所有投資標的
-  isDragging: boolean = false;          //  是否正在拖曳
+  isDragging = false;          //  是否正在拖曳
   draggedIndex: number;                 //  被拖曳的index
   currentCategory: Category;            //  當前類別
   currentPortfolios: Portfolio[] = [];  //  當前類別的所有投資標的
@@ -50,7 +50,7 @@ export class PortfoliosComponent implements OnInit {
         concatMap(() => this.categoryService.getCategories()),
         tap(res => {
           // 如果沒有類別，預設「我的」類別
-          if(res.length === 0){
+          if (res.length === 0){
             const req: CategoryReq = {categoryName: '我的'};
             this.categoryService.addCategory(req)
               .pipe(
@@ -95,7 +95,7 @@ export class PortfoliosComponent implements OnInit {
       return this.stockService.getTaiwanStockPrice(req);
     });
 
-    if(observables.length !== 0) {
+    if (observables.length !== 0) {
       // 一次取得所有股票的日成交資訊
       forkJoin(observables)
         .subscribe(res => {
@@ -121,7 +121,7 @@ export class PortfoliosComponent implements OnInit {
   deletePortfolio(portfolioId: string) {
     this.loadingService.show();
     this.portfolios = this.portfolios.map(portfolio => {
-      if(portfolio.stockId === portfolioId){
+      if (portfolio.stockId === portfolioId){
         const updatedCategories = portfolio.categories.filter(category => category !== this.currentCategory.id);
         return {...portfolio, categories: updatedCategories};
       } else {
@@ -131,7 +131,7 @@ export class PortfoliosComponent implements OnInit {
     this.currentPortfoliosStockInfo = this.currentPortfoliosStockInfo.filter(portfolio => portfolio.stockId !== portfolioId);
     const req = this.portfolios.find(portfolio => portfolio.stockId === portfolioId);
 
-    if(!req) {
+    if (!req) {
       this.portfolioService.deletePortfolio(portfolioId).subscribe(() => this.loadingService.hide());
     } else {
       this.portfolioService.updatePortfolio(portfolioId, req).subscribe(() => this.loadingService.hide());
@@ -158,10 +158,10 @@ export class PortfoliosComponent implements OnInit {
 
   /** 結束編輯類別 */
   endEditCategories() {
-    if(!_.isEqual(this.categories, this.categroiesEdited)) {
+    if (!_.isEqual(this.categories, this.categroiesEdited)) {
       this.loadingService.show();
       this.handleCategoriesModify();
-      if(!_.isEqual(this.portfolios, this.portfoliosEdited)) {
+      if (!_.isEqual(this.portfolios, this.portfoliosEdited)) {
         this.handlePortfoliosModify();
       }
     }
@@ -179,7 +179,7 @@ export class PortfoliosComponent implements OnInit {
     this.categoryService.updateCategories(transformedData)
       .subscribe(() => {
         // 如果刪除的類別為當下類別，則需切換tab為第一個類別
-        if(!this.categories.some(category => category.id === this.currentCategory.id)) {
+        if (!this.categories.some(category => category.id === this.currentCategory.id)) {
           this.currentCategory = this.categories[0];
           this.changeTab(this.categories[0].id);
         } else {
@@ -234,12 +234,12 @@ export class PortfoliosComponent implements OnInit {
       const cloneDraggedItem = _.cloneDeep(draggedItem);
       // 交換類別，投資標的也要交換
       this.portfoliosEdited.forEach(portfolio => {
-        if(portfolio.categories.includes(draggedItem.id) && portfolio.categories.includes(dragOverItem.id)) {
+        if (portfolio.categories.includes(draggedItem.id) && portfolio.categories.includes(dragOverItem.id)) {
           return;
-        } else if(portfolio.categories.includes(draggedItem.id)) {
+        } else if (portfolio.categories.includes(draggedItem.id)) {
           portfolio.categories = portfolio.categories.filter(category => category !== draggedItem.id);
           portfolio.categories.push(dragOverItem.id);
-        }else if(portfolio.categories.includes(dragOverItem.id)) {
+        }else if (portfolio.categories.includes(dragOverItem.id)) {
           portfolio.categories = portfolio.categories.filter(category => category !== dragOverItem.id);
           portfolio.categories.push(draggedItem.id);
         }

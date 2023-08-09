@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit {
-  isLoginMode: boolean = true;
+  isLoginMode = true;
 
   constructor(
     private authService: AuthService,
@@ -35,7 +35,7 @@ export class AuthComponent implements OnInit {
 
     let authObs: Observable<AuthRes>;
 
-    if(this.isLoginMode) {
+    if (this.isLoginMode) {
       authObs = this.authService.login(email, password);
     } else {
       authObs = this.authService.signUp(email, password);

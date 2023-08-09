@@ -24,8 +24,8 @@ export class PortfolioService {
       .pipe(
         map(res => {
           const postsArray: Portfolio[] = [];
-          for(const key in res) {
-            if(res.hasOwnProperty(key)) {
+          for (const key in res) {
+            if (res.hasOwnProperty(key)) {
               postsArray.push({...res[key], id: key});
             }
           }

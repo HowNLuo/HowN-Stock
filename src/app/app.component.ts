@@ -8,7 +8,7 @@ import { Component, AfterContentChecked, OnInit } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterContentChecked, OnInit{
-  isLoading: boolean = false;
+  isLoading = false;
 
   constructor(
     private loadingService: LoadingService,

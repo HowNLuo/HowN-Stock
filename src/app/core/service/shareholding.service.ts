@@ -22,8 +22,8 @@ export class ShareholdingService {
       .pipe(
         map(res => {
           const postsArray: Shareholding[] = [];
-          for(const key in res) {
-            if(res.hasOwnProperty(key)) {
+          for (const key in res) {
+            if (res.hasOwnProperty(key)) {
               postsArray.push({...res[key], id: key});
             }
           }
