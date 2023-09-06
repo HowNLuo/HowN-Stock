@@ -18,7 +18,7 @@ export class FirebaseService {
     private http: HttpClient,
     private loadingService: LoadingService,
     private authService: AuthService,
-    ) { }
+  ) { }
 
   getApi<T>(url: string, functionName: string) {
     return this.authService.user.pipe(
@@ -76,8 +76,7 @@ export class FirebaseService {
   handleApiError(error: any) {
     console.error('API錯誤', error);
     this.loadingService.hide();
-    this.modalRef = this.bsModalService.show(ModalDialogComponent)
-    this.modalRef.content.message = error.message;
+    this.modalRef = this.bsModalService.show(ModalDialogComponent, { initialState: { type: 'error', message: error.message } })
     return throwError('發生錯誤')
   }
 }
