@@ -127,7 +127,6 @@
       }
     }
   },
-  "defaultProject": "stock",
   "cli": {
     "analytics": false
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { Shareholding } from './../core/interface/shareholding.interface';
 import { LoadingService } from './../core/service/loading.service';
@@ -17,7 +17,7 @@ import * as _ from 'lodash';
   styleUrls: ['./shareholding-details.component.scss']
 })
 export class ShareholdingDetailsComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   shareHoldingDetail: Shareholding[] = [];
   cloneShareHoldingDetail: Shareholding[];
   stocksInfo: TaiwanStockInfo[];
@@ -57,7 +57,7 @@ export class ShareholdingDetailsComponent implements OnInit {
     private shareholdingService: ShareholdingService,
     private stockService: StockService,
     private loadingService: LoadingService,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) { }
 
   ngOnInit() {
